@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --forest: #1c3a1e;
+  --forest-light: #2d5530;
+  --forest-dark: #0f2010;
+  --sage: #4a6741;
+  --fern: #7fa86b;
+  --mint: #b8d4b0;
+  --cream: #f7f3ec;
+  --parchment: #ede7d9;
+  --sand: #d4c5a9;
+  --bark: #7b5427;
+  --terra: #c4714b;
+  --terra-dark: #a85c3a;
+  --text: #1a1a1a;
+  --text-muted: #6a6a5a;
+  --text-light: #a8a89a;
+  --white: #ffffff;
+  --shadow-xs: 0 1px 3px rgba(28, 58, 30, 0.08);
+  --shadow-sm: 0 2px 8px rgba(28, 58, 30, 0.1);
+  --shadow-md: 0 4px 20px rgba(28, 58, 30, 0.12);
+  --shadow-lg: 0 8px 40px rgba(28, 58, 30, 0.16);
+  --shadow-xl: 0 16px 60px rgba(28, 58, 30, 0.2);
+  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --font-display: "Cormorant Garant", Georgia, serif;
+  --font-body: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+  --transition: 0.2s ease;
+  --transition-slow: 0.4s ease;
+}
+
+html {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: var(--cream);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--parchment);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--sand);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sage);
+}
