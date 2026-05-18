@@ -353,10 +353,7 @@ export default function PlantDetailPage() {
       <nav className="pd-nav">
         <div className="pd-nav-inner">
           <Link href={`/${locale}`} className="pd-logo">
-            <span className="pd-logo-icon">
-              <LeafSVG size={18} />
-            </span>
-            <span className="pd-logo-text">Verde Garden</span>
+            <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "32px", width: "auto", display: "block" }} />
           </Link>
           <div className="pd-nav-right">
             <LanguageSwitcher />

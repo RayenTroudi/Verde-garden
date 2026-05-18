@@ -789,8 +789,7 @@ export default function HomePage() {
         <nav className={`vg-nav${scrolled ? " scrolled" : ""}`}>
           <div className="vg-nav-inner">
             <Link href={`/${locale}`} className="vg-logo" onClick={() => setMobileMenuOpen(false)}>
-              <div className="vg-logo-icon"><LeafSVG /></div>
-              <span className="vg-logo-text">Verde Garden</span>
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "52px", width: "auto", display: "block" }} />
             </Link>
             <div className="vg-nav-right">
               <span className="vg-nav-count">
@@ -998,8 +997,7 @@ export default function HomePage() {
         <footer className="vg-footer">
           <div className="vg-footer-inner">
             <div className="vg-footer-brand">
-              <LeafSVG />
-              Verde Garden
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "28px", width: "auto", display: "block" }} />
             </div>
             {session && (
               <div className="vg-footer-links">

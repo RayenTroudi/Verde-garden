@@ -518,10 +518,7 @@ export default function AdminPage() {
         <aside className={`adm-sidebar${sidebarOpen ? " open" : ""}`}>
           <div className="adm-sidebar-header">
             <Link href={`/${locale}`} className="adm-logo-link">
-              <div className="adm-logo-icon">
-                <LeafIcon size={18} />
-              </div>
-              <span className="adm-logo-text">Verde Garden</span>
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "32px", width: "auto", display: "block" }} />
             </Link>
             <span className="adm-admin-badge">{t("admin.title")}</span>
           </div>
