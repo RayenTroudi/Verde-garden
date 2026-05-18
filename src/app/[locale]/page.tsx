@@ -36,25 +36,6 @@ const SearchSVG = () => (
   </svg>
 );
 
-const WaterSVG = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const SunSVG = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
 
 const LeafDecoration = () => (
   <div className="vg-hero-leaves" aria-hidden="true">
@@ -599,12 +580,13 @@ export default function HomePage() {
         }
         .vg-card-img-wrap {
           position: relative; aspect-ratio: 4/3; overflow: hidden;
-          background: var(--parchment);
+          background: var(--white);
         }
         .vg-card-img-wrap img {
           transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+          padding: 6px;
         }
-        .vg-card:hover .vg-card-img-wrap img { transform: scale(1.06); }
+        .vg-card:hover .vg-card-img-wrap img { transform: scale(1.04); }
         .vg-card-placeholder {
           width: 100%; height: 100%;
           display: grid; place-items: center;
@@ -950,7 +932,7 @@ export default function HomePage() {
                                 alt={plant.name?.[locale as "fr" | "en"] ?? ""}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                style={{ objectFit: "cover" }}
+                                style={{ objectFit: "contain", objectPosition: "center top", padding: "8px" }}
                               />
                             ) : (
                               <div className="vg-card-placeholder"><LeafSVG /></div>
@@ -983,12 +965,12 @@ export default function HomePage() {
                               <div className="vg-card-care">
                                 {plant.careInstructions.wateringFrequency && (
                                   <span className="vg-care-tag">
-                                    <WaterSVG /> {plant.careInstructions.wateringFrequency}
+                                    💧 {plant.careInstructions.wateringFrequency}
                                   </span>
                                 )}
                                 {plant.careInstructions.lightRequirements && (
                                   <span className="vg-care-tag">
-                                    <SunSVG /> {plant.careInstructions.lightRequirements}
+                                    ☀️ {plant.careInstructions.lightRequirements}
                                   </span>
                                 )}
                               </div>
