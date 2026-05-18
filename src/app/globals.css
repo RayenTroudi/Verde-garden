@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Outfit:wght@300;400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap");
 
 *,
 *::before,
@@ -9,35 +9,44 @@
 }
 
 :root {
-  --forest: #1c3a1e;
+  --forest:       #1c3a1e;
   --forest-light: #2d5530;
-  --forest-dark: #0f2010;
-  --sage: #4a6741;
-  --fern: #7fa86b;
-  --mint: #b8d4b0;
-  --cream: #f7f3ec;
-  --parchment: #ede7d9;
-  --sand: #d4c5a9;
-  --bark: #7b5427;
-  --terra: #c4714b;
-  --terra-dark: #a85c3a;
-  --text: #1a1a1a;
-  --text-muted: #6a6a5a;
-  --text-light: #a8a89a;
-  --white: #ffffff;
-  --shadow-xs: 0 1px 3px rgba(28, 58, 30, 0.08);
-  --shadow-sm: 0 2px 8px rgba(28, 58, 30, 0.1);
-  --shadow-md: 0 4px 20px rgba(28, 58, 30, 0.12);
-  --shadow-lg: 0 8px 40px rgba(28, 58, 30, 0.16);
-  --shadow-xl: 0 16px 60px rgba(28, 58, 30, 0.2);
+  --forest-dark:  #0f2010;
+  --sage:         #4a6741;
+  --fern:         #7fa86b;
+  --mint:         #b8d4b0;
+  --cream:        #f6f2eb;
+  --parchment:    #ece6d8;
+  --sand:         #d3c4a7;
+  --bark:         #7b5427;
+  --terra:        #c4714b;
+  --terra-dark:   #a85c3a;
+
+  --text:         #111827;
+  --text-muted:   #6b7280;
+  --text-light:   #9ca3af;
+  --white:        #ffffff;
+
+  /* Shadows — more refined, multi-layer */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(28,58,30,0.06);
+  --shadow-md: 0 2px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(28,58,30,0.1);
+  --shadow-lg: 0 4px 8px rgba(0,0,0,0.07), 0 16px 40px rgba(28,58,30,0.14);
+  --shadow-xl: 0 8px 16px rgba(0,0,0,0.08), 0 24px 60px rgba(28,58,30,0.18);
+
+  /* Radii */
   --radius-sm: 6px;
-  --radius: 12px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
+  --radius:    10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Typography */
   --font-display: "Cormorant Garant", Georgia, serif;
-  --font-body: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
-  --transition: 0.2s ease;
-  --transition-slow: 0.4s ease;
+  --font-body:    "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Transitions */
+  --transition:      0.18s ease;
+  --transition-slow: 0.35s ease;
 }
 
 html {
@@ -78,16 +87,7 @@ img {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--parchment);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--sand);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--sage);
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sage); }

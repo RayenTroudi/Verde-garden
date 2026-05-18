@@ -18,15 +18,8 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-
-    const result = await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
-    });
-
+    const result = await signIn("credentials", { username, password, redirect: false });
     setLoading(false);
-
     if (result?.error) {
       setError(t("login.invalidCredentials"));
     } else {
@@ -37,205 +30,324 @@ export default function LoginPage() {
   return (
     <>
       <style>{`
-        .login-root {
+        .lg-root {
           min-height: 100vh;
-          background: linear-gradient(160deg, var(--forest-dark) 0%, var(--forest) 40%, var(--cream) 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 1.5rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           font-family: var(--font-body);
         }
-        .login-card {
-          background: var(--white);
-          border-radius: var(--radius-lg);
-          padding: 2.5rem 2rem;
-          width: 100%;
-          max-width: 400px;
-          box-shadow: var(--shadow-xl);
-          border: 1px solid var(--parchment);
-        }
-        @media (max-width: 480px) {
-          .login-root { padding: 1rem; align-items: flex-start; padding-top: clamp(3rem, 15vh, 6rem); }
-          .login-card { padding: 2rem 1.5rem; border-radius: var(--radius); }
-        }
-        .login-logo {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-          margin-bottom: 0.5rem;
-          justify-content: space-between;
-        }
-        .login-logo-brand {
-          display: flex;
-          align-items: center;
-          gap: 0.65rem;
-        }
-        .login-logo-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 8px;
+
+        /* ─── LEFT PANEL ──────────────────────────────── */
+        .lg-panel {
           background: var(--forest);
-          display: grid;
-          place-items: center;
+          position: relative;
+          display: flex; flex-direction: column;
+          justify-content: space-between;
+          padding: 3rem;
+          overflow: hidden;
+        }
+        /* Mesh gradient */
+        .lg-panel::before {
+          content: '';
+          position: absolute; inset: 0;
+          background:
+            radial-gradient(ellipse 70% 50% at 20% 20%, rgba(127,168,107,0.2) 0%, transparent 55%),
+            radial-gradient(ellipse 50% 60% at 80% 70%, rgba(74,103,65,0.25) 0%, transparent 50%);
+          pointer-events: none;
+        }
+        /* Grid texture */
+        .lg-panel-grid {
+          position: absolute; inset: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(184,212,176,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(184,212,176,0.05) 1px, transparent 1px);
+          background-size: 40px 40px;
+          mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 75%);
+        }
+        .lg-panel-content { position: relative; z-index: 1; }
+        .lg-panel-logo {
+          display: flex; align-items: center; gap: 0.6rem;
+          text-decoration: none;
+        }
+        .lg-panel-logo-icon {
+          width: 38px; height: 38px;
+          background: rgba(184,212,176,0.15);
+          border: 1px solid rgba(184,212,176,0.3);
+          border-radius: 10px;
+          display: grid; place-items: center;
           color: var(--mint);
-          flex-shrink: 0;
         }
-        .login-logo-text {
+        .lg-panel-logo-text {
           font-family: var(--font-display);
-          font-size: 1.4rem;
-          font-weight: 500;
-          color: var(--forest);
+          font-size: 1.45rem; font-weight: 500;
+          color: var(--cream);
         }
-        .login-badge {
-          display: inline-block;
-          font-size: 0.6rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.14em;
+
+        .lg-panel-center { position: relative; z-index: 1; }
+        .lg-panel-quote {
+          font-family: var(--font-display);
+          font-size: clamp(1.75rem, 3vw, 2.75rem);
+          font-weight: 300; line-height: 1.25;
+          color: var(--cream);
+          letter-spacing: -0.01em;
+          margin-bottom: 1rem;
+        }
+        .lg-panel-quote em { font-style: italic; color: var(--mint); }
+        .lg-panel-sub {
+          font-size: 0.875rem; font-weight: 300;
+          color: rgba(247,243,236,0.5);
+          line-height: 1.7;
+          max-width: 340px;
+        }
+
+        .lg-panel-footer { position: relative; z-index: 1; }
+        .lg-panel-dots {
+          display: flex; gap: 0.5rem;
+        }
+        .lg-panel-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: rgba(184,212,176,0.3);
+        }
+        .lg-panel-dot:first-child { background: var(--mint); width: 18px; border-radius: 3px; }
+
+        /* ─── RIGHT PANEL ─────────────────────────────── */
+        .lg-form-panel {
+          background: var(--cream);
+          display: flex; align-items: center; justify-content: center;
+          padding: 3rem 2rem;
+        }
+        .lg-card {
+          width: 100%;
+          max-width: 420px;
+        }
+        .lg-card-header {
+          margin-bottom: 2.5rem;
+        }
+        .lg-badge {
+          display: inline-flex; align-items: center; gap: 0.4rem;
+          font-size: 0.62rem; font-weight: 700;
+          text-transform: uppercase; letter-spacing: 0.16em;
           color: var(--sage);
           background: rgba(74,103,65,0.08);
-          border: 1px solid rgba(74,103,65,0.18);
-          padding: 0.2rem 0.6rem;
-          border-radius: 4px;
-          margin-bottom: 1.75rem;
+          border: 1px solid rgba(74,103,65,0.15);
+          padding: 0.3rem 0.75rem; border-radius: 7px;
+          margin-bottom: 1.25rem;
         }
-        .login-title {
+        .lg-badge-dot {
+          width: 5px; height: 5px; border-radius: 50%;
+          background: var(--fern);
+        }
+        .lg-title {
           font-family: var(--font-display);
-          font-size: 1.75rem;
-          font-weight: 500;
-          color: var(--forest);
-          margin-bottom: 0.35rem;
+          font-size: 2rem; font-weight: 400;
+          color: var(--forest); line-height: 1.1;
+          letter-spacing: -0.01em;
+          margin-bottom: 0.4rem;
         }
-        .login-sub {
-          font-size: 0.825rem;
-          color: var(--text-muted);
-          margin-bottom: 1.75rem;
+        .lg-subtitle {
+          font-size: 0.875rem; color: var(--text-muted);
+          line-height: 1.6;
         }
-        .login-field {
-          display: flex;
-          flex-direction: column;
-          gap: 0.4rem;
-          margin-bottom: 1rem;
+
+        /* Form fields */
+        .lg-field {
+          display: flex; flex-direction: column; gap: 0.45rem;
+          margin-bottom: 1.1rem;
         }
-        .login-label {
-          font-size: 0.78rem;
-          font-weight: 500;
-          color: var(--text);
+        .lg-label {
+          font-size: 0.78rem; font-weight: 600;
+          color: var(--text); letter-spacing: 0.01em;
         }
-        .login-input {
-          padding: 0.7rem 0.9rem;
-          border-radius: var(--radius-sm);
-          border: 1.5px solid var(--parchment);
-          font-size: 0.875rem;
-          color: var(--text);
-          background: var(--cream);
-          outline: none;
-          transition: border-color var(--transition), box-shadow var(--transition);
+        .lg-input-wrap { position: relative; }
+        .lg-input {
           width: 100%;
-          font-family: var(--font-body);
-        }
-        .login-input:focus {
-          border-color: var(--fern);
-          box-shadow: 0 0 0 3px rgba(127,168,107,0.12);
+          padding: 0.72rem 1rem;
           background: var(--white);
+          border: 1.5px solid var(--parchment);
+          border-radius: 10px;
+          font-size: 0.875rem; color: var(--text);
+          font-family: var(--font-body);
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
-        .login-error {
-          font-size: 0.8rem;
-          color: var(--terra);
-          background: rgba(196,113,75,0.08);
-          border: 1px solid rgba(196,113,75,0.2);
-          border-radius: var(--radius-sm);
-          padding: 0.6rem 0.9rem;
-          margin-bottom: 1rem;
+        .lg-input:focus {
+          border-color: var(--fern);
+          box-shadow: 0 0 0 3px rgba(127,168,107,0.15), 0 1px 2px rgba(0,0,0,0.04);
         }
-        .login-submit {
+        .lg-input::placeholder { color: var(--text-light); }
+
+        .lg-error {
+          display: flex; align-items: flex-start; gap: 0.5rem;
+          font-size: 0.8rem; color: #991b1b;
+          background: #fee2e2;
+          border: 1px solid #fecaca;
+          border-radius: 8px;
+          padding: 0.65rem 0.9rem;
+          margin-bottom: 1.1rem;
+          line-height: 1.5;
+        }
+        .lg-error-icon {
+          width: 16px; height: 16px; flex-shrink: 0;
+          margin-top: 0.1rem;
+        }
+
+        .lg-submit {
           width: 100%;
           background: var(--forest);
           color: var(--cream);
-          font-size: 0.875rem;
-          font-weight: 500;
-          padding: 0.8rem;
-          border-radius: 100px;
-          border: none;
-          cursor: pointer;
-          transition: background var(--transition), opacity var(--transition);
+          font-size: 0.9rem; font-weight: 500;
+          padding: 0.85rem;
+          border-radius: 10px;
+          border: none; cursor: pointer;
           font-family: var(--font-body);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
+          display: flex; align-items: center; justify-content: center; gap: 0.5rem;
           margin-top: 0.5rem;
+          transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+          box-shadow: 0 2px 8px rgba(28,58,30,0.2);
         }
-        .login-submit:hover:not(:disabled) { background: var(--forest-light); }
-        .login-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .lg-submit:hover:not(:disabled) {
+          background: var(--forest-light);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 16px rgba(28,58,30,0.25);
+        }
+        .lg-submit:active:not(:disabled) { transform: translateY(0); }
+        .lg-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
         @keyframes spin { to { transform: rotate(360deg); } }
-        .login-spinner {
-          width: 16px;
-          height: 16px;
+        .lg-spinner {
+          width: 16px; height: 16px;
           border-radius: 50%;
           border: 2px solid rgba(247,243,236,0.3);
           border-top-color: var(--cream);
           animation: spin 0.7s linear infinite;
+          flex-shrink: 0;
+        }
+
+        .lg-footer-link {
+          display: block; text-align: center;
+          margin-top: 1.5rem;
+          font-size: 0.78rem; color: var(--text-muted);
+          text-decoration: none; transition: color 0.18s;
+        }
+        .lg-footer-link a { color: var(--sage); text-decoration: underline; }
+        .lg-footer-link:hover { color: var(--text); }
+
+        /* ─── RESPONSIVE ───────────────────────────────── */
+        @media (max-width: 768px) {
+          .lg-root { grid-template-columns: 1fr; }
+          .lg-panel { display: none; }
+          .lg-form-panel {
+            min-height: 100vh;
+            padding: 2rem 1.25rem;
+            align-items: flex-start;
+            padding-top: clamp(3.5rem, 15vh, 6rem);
+          }
         }
       `}</style>
 
-      <div className="login-root">
-        <div className="login-card">
-<div className="login-logo">
-            <div className="login-logo-brand">
-              <div className="login-logo-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <div className="lg-root">
+        {/* LEFT: Brand panel */}
+        <div className="lg-panel">
+          <div className="lg-panel-grid" />
+          <div className="lg-panel-content">
+            <a href={`/${locale}`} className="lg-panel-logo">
+              <div className="lg-panel-logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span className="login-logo-text">Verde Garden</span>
+              <span className="lg-panel-logo-text">Verde Garden</span>
+            </a>
+          </div>
+
+          <div className="lg-panel-center">
+            <p className="lg-panel-quote">
+              Cultivate your <em>garden</em>,<br />
+              grow your <em>vision</em>.
+            </p>
+            <p className="lg-panel-sub">
+              Manage your plant inventory, track stock levels, and share your collection with the world.
+            </p>
+          </div>
+
+          <div className="lg-panel-footer">
+            <div className="lg-panel-dots">
+              <div className="lg-panel-dot" />
+              <div className="lg-panel-dot" />
+              <div className="lg-panel-dot" />
             </div>
           </div>
-          <span className="login-badge">{t("login.adminAccess")}</span>
+        </div>
 
-          <h1 className="login-title">{t("login.title")}</h1>
-          <p className="login-sub">{t("login.subtitle")}</p>
-
-          <form onSubmit={handleSubmit} noValidate>
-            {error && <div className="login-error">{error}</div>}
-
-            <div className="login-field">
-              <label className="login-label" htmlFor="username">
-                {t("login.username")}
-              </label>
-              <input
-                id="username"
-                className="login-input"
-                type="text"
-                autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
+        {/* RIGHT: Form panel */}
+        <div className="lg-form-panel">
+          <div className="lg-card">
+            <div className="lg-card-header">
+              <div className="lg-badge">
+                <span className="lg-badge-dot" />
+                {t("login.adminAccess")}
+              </div>
+              <h1 className="lg-title">{t("login.title")}</h1>
+              <p className="lg-subtitle">{t("login.subtitle")}</p>
             </div>
 
-            <div className="login-field">
-              <label className="login-label" htmlFor="password">
-                {t("login.password")}
-              </label>
-              <input
-                id="password"
-                className="login-input"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <form onSubmit={handleSubmit} noValidate>
+              {error && (
+                <div className="lg-error">
+                  <svg className="lg-error-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  {error}
+                </div>
+              )}
 
-            <button type="submit" className="login-submit" disabled={loading}>
-              {loading && <span className="login-spinner" />}
-              {loading ? t("login.signingIn") : t("login.signin")}
-            </button>
-          </form>
+              <div className="lg-field">
+                <label className="lg-label" htmlFor="username">
+                  {t("login.username")}
+                </label>
+                <div className="lg-input-wrap">
+                  <input
+                    id="username"
+                    className="lg-input"
+                    type="text"
+                    autoComplete="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="lg-field">
+                <label className="lg-label" htmlFor="password">
+                  {t("login.password")}
+                </label>
+                <div className="lg-input-wrap">
+                  <input
+                    id="password"
+                    className="lg-input"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" className="lg-submit" disabled={loading}>
+                {loading && <span className="lg-spinner" />}
+                {loading ? t("login.signingIn") : t("login.signin")}
+              </button>
+            </form>
+
+            <p className="lg-footer-link">
+              <a href={`/${locale}`}>← Back to storefront</a>
+            </p>
+          </div>
         </div>
       </div>
     </>
