@@ -135,20 +135,6 @@ export default function PlantDetailPage() {
           background: var(--cream);
           padding-top: 68px;
         }
-        /* Subtle tinted top area */
-        .pd-page-top {
-          background: linear-gradient(180deg, rgba(28,58,30,0.04) 0%, transparent 100%);
-          border-bottom: 1px solid rgba(0,0,0,0.05);
-          padding: 0.75rem 2rem;
-        }
-        .pd-breadcrumb {
-          max-width: 1100px; margin: 0 auto;
-          display: flex; align-items: center; gap: 0.5rem;
-          font-size: 0.75rem; color: var(--text-light);
-        }
-        .pd-breadcrumb a { color: var(--sage); text-decoration: none; transition: color 0.18s; }
-        .pd-breadcrumb a:hover { color: var(--forest); }
-        .pd-breadcrumb-sep { color: var(--sand); }
 
         .pd-container {
           max-width: 1100px; margin: 0 auto;
@@ -394,22 +380,6 @@ export default function PlantDetailPage() {
       <StoreNav showCart showBack />
 
       <main className="pd-page">
-        {/* Breadcrumb strip */}
-        <div className="pd-page-top">
-          <nav className="pd-breadcrumb" aria-label="Breadcrumb">
-            <Link href={`/${locale}`}>Verde Garden</Link>
-            <span className="pd-breadcrumb-sep">›</span>
-            {plant?.category && (
-              <>
-                <span>{plant.category}</span>
-                <span className="pd-breadcrumb-sep">›</span>
-              </>
-            )}
-            <span style={{ color: "var(--text)" }}>
-              {plant ? (plant.name?.[locale as "fr" | "en"] ?? plant.name?.fr ?? "") : "…"}
-            </span>
-          </nav>
-        </div>
 
         <div className="pd-container">
           {loading && (

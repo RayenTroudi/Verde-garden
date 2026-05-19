@@ -138,7 +138,7 @@ function CheckoutContent() {
         }
         .co-header {
           background: var(--forest);
-          padding: 5.5rem 2rem 2.5rem;
+          padding: 5.5rem 2rem 3.5rem;
           position: relative; overflow: hidden;
         }
         .co-header::after {
@@ -170,28 +170,30 @@ function CheckoutContent() {
         /* Steps */
         .co-steps {
           display: flex; gap: 0; max-width: 1100px;
-          margin: 0 auto; padding: 1.5rem 2rem 0;
+          margin: 0 auto; padding: 1.25rem 0 0;
+          position: relative; z-index: 1;
         }
         .co-step {
           display: flex; align-items: center; gap: 0.5rem;
-          font-size: 0.8rem; font-weight: 500; color: var(--text-muted);
+          font-size: 0.8rem; font-weight: 500; color: rgba(255,255,255,0.55);
         }
-        .co-step.active { color: var(--forest); }
+        .co-step.active { color: white; }
+        .co-step.done { color: rgba(255,255,255,0.75); }
         .co-step-num {
           width: 26px; height: 26px; border-radius: 50%;
-          border: 2px solid var(--sand);
+          border: 2px solid rgba(255,255,255,0.3);
           display: grid; place-items: center;
-          font-size: 0.72rem; font-weight: 700;
+          font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.55);
         }
         .co-step.active .co-step-num {
-          background: var(--forest); border-color: var(--forest); color: white;
+          background: white; border-color: white; color: var(--forest);
         }
         .co-step.done .co-step-num {
-          background: #dcfce7; border-color: #166534; color: #166534;
+          background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); color: white;
         }
         .co-step-line {
           flex: 1; height: 2px;
-          background: var(--parchment);
+          background: rgba(255,255,255,0.2);
           margin: 0 0.75rem;
         }
 
@@ -235,8 +237,7 @@ function CheckoutContent() {
         @media (max-width: 600px) {
           .co-grid-2 { grid-template-columns: 1fr; }
           .co-body { padding: 1rem; }
-          .co-steps { padding: 1rem 1rem 0; }
-          .co-header { padding: 5rem 1.25rem 2.5rem; }
+          .co-header { padding: 5rem 1.25rem 3rem; }
         }
         .co-field { margin-bottom: 1rem; }
         .co-label {
@@ -427,19 +428,17 @@ function CheckoutContent() {
         <div className="co-header">
           <div className="co-header-inner">
             <h1 className="co-title">{t("checkout.title")}</h1>
-          </div>
-        </div>
-
-        {/* Steps */}
-        <div className="co-steps">
-          <div className={`co-step ${step === "shipping" ? "active" : "done"}`}>
-            <div className="co-step-num">{step === "shipping" ? "1" : "✓"}</div>
-            {t("checkout.stepShipping")}
-          </div>
-          <div className="co-step-line" />
-          <div className={`co-step ${step === "payment" ? "active" : ""}`}>
-            <div className="co-step-num">2</div>
-            {t("checkout.stepPayment")}
+            <div className="co-steps">
+              <div className={`co-step ${step === "shipping" ? "active" : "done"}`}>
+                <div className="co-step-num">{step === "shipping" ? "1" : "✓"}</div>
+                {t("checkout.stepShipping")}
+              </div>
+              <div className="co-step-line" />
+              <div className={`co-step ${step === "payment" ? "active" : ""}`}>
+                <div className="co-step-num">2</div>
+                {t("checkout.stepPayment")}
+              </div>
+            </div>
           </div>
         </div>
 
