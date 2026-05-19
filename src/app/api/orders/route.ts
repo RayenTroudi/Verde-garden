@@ -89,9 +89,22 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get("page") ?? "1");
     const limit = parseInt(searchParams.get("limit") ?? "20");
     const status = searchParams.get("status");
+    const paymentStatus = searchParams.get("paymentStatus");
+    const paymentMethod = searchParams.get("paymentMethod");
+    const search = searchParams.get("search");
 
     const filter: Record<string, unknown> = {};
     if (status) filter.shippingStatus = status;
+    if (paymentStatus) filter.paymentStatus = paymentStatus;
+    if (paymentMethod) filter.paymentMethod = paymentMethod;
+    if (search) {
+      filter.$or = [
+        { orderNumber: { $regex: search, $options: "i" } },
+        { "shipping.fullName": { $regex: search, $options: "i" } },
+        { "shipping.email": { $regex: search, $options: "i" } },
+        { "shipping.phone": { $regex: search, $options: "i" } },
+      ];
+    }
 
     const total = await Order.countDocuments(filter);
     const orders = await Order.find(filter)
