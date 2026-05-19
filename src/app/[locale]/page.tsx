@@ -812,7 +812,8 @@ export default function HomePage() {
             ) : (
               <>
                 <div className="vg-results-bar">
-                  <span className="vg-results-count">
+                  <span className="vg-results-count" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                    <Leaf size={14} fill="currentColor" style={{ color: "#7fa86b", flexShrink: 0 }} aria-hidden="true" />
                     {filtered.length} {filtered.length === 1 ? t("navigation.plants").replace("s","") : t("navigation.plants")}
                     {activeCategory && ` · ${activeCategory}`}
                     {search && ` · "${search}"`}

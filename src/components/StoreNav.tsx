@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useCart } from "@/context/CartContext";
-import { ShoppingCart, ArrowLeft } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Leaf } from "lucide-react";
 
 interface StoreNavProps {
   showCart?: boolean;
@@ -185,7 +185,8 @@ export default function StoreNav({
 
           <div className="sn-right">
             {showPlantCount && (
-              <span className="sn-count">
+              <span className="sn-count" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                <Leaf size={12} fill="currentColor" style={{ color: "#7fa86b", flexShrink: 0 }} aria-hidden="true" />
                 {loadingPlants ? "—" : `${plantCount} ${t("navigation.plants")}`}
               </span>
             )}
@@ -230,7 +231,8 @@ export default function StoreNav({
             <LanguageSwitcher />
             <div className="sn-mobile-divider" />
             {showPlantCount && (
-              <span className="sn-mobile-count">
+              <span className="sn-mobile-count" style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
+                <Leaf size={12} fill="currentColor" style={{ color: "#7fa86b", flexShrink: 0 }} aria-hidden="true" />
                 {loadingPlants ? "—" : `${plantCount} ${t("navigation.plants")}`}
               </span>
             )}
