@@ -45,15 +45,20 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     const load = async () => {
-      const [analyticsRes, ordersRes] = await Promise.all([
-        fetch("/api/analytics"),
-        fetch("/api/orders?page=1&limit=5"),
-      ]);
-      const analyticsData = await analyticsRes.json();
-      const ordersData = await ordersRes.json();
-      setSummary(analyticsData.summary);
-      setRecentOrders(ordersData.orders ?? []);
-      setLoading(false);
+      try {
+        const [analyticsRes, ordersRes] = await Promise.all([
+          fetch("/api/analytics"),
+          fetch("/api/orders?page=1&limit=5"),
+        ]);
+        const analyticsData = await analyticsRes.json();
+        const ordersData = await ordersRes.json();
+        setSummary(analyticsData.summary);
+        setRecentOrders(ordersData.orders ?? []);
+      } catch {
+        // silently handle fetch errors — UI shows empty state
+      } finally {
+        setLoading(false);
+      }
     };
     load();
   }, []);
