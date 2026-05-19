@@ -6,12 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
-
-const LeafSVG = ({ size = 20, wide = false }: { size?: number; wide?: boolean }) => (
-  <img src="/icons/logo.svg" width={wide ? "auto" : size} height={wide ? "100%" : size} alt="" aria-hidden="true" style={{ display: "block", height: wide ? "100%" : size, width: "auto" }} />
-);
+import StoreNav from "@/components/StoreNav";
 
 const SHIPPING_THRESHOLD = 150;
 const SHIPPING_COST = 7;
@@ -40,22 +35,12 @@ function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isBuyNow = searchParams.get("buynow") === "1";
-  const { data: session } = useSession();
-  const { itemCount } = useCart();
-
-  const [scrolled, setScrolled] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
   const [form, setForm] = useState<ShippingForm>(EMPTY_FORM);
   const [errors, setErrors] = useState<Partial<ShippingForm>>({});
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | "online">("cash_on_delivery");
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     if (isBuyNow) {
@@ -147,70 +132,6 @@ function CheckoutContent() {
   return (
     <>
       <style>{`
-        /* ─── NAV ──────────────────────────────────────────────────── */
-        .co-nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          background: var(--forest);
-          transition: box-shadow 0.3s ease, background 0.3s ease;
-        }
-        .co-nav.scrolled {
-          background: rgba(15,32,16,0.96);
-          backdrop-filter: blur(14px);
-          box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 4px 32px rgba(0,0,0,0.25);
-        }
-        .co-nav-inner {
-          max-width: 1400px; margin: 0 auto;
-          padding: 0 2rem; height: 68px;
-          display: flex; align-items: center; justify-content: space-between;
-        }
-        .co-nav-logo {
-          display: flex; align-items: center; gap: 0.55rem; text-decoration: none;
-        }
-        .co-nav-logo-icon {
-          height: 24px; width: auto;
-          display: grid; place-items: center;
-        }
-        .co-nav-logo:hover .co-nav-logo-icon { opacity: 0.88; }
-        .co-nav-logo-text {
-          font-family: var(--font-display);
-          font-size: 1.35rem; font-weight: 500;
-          color: var(--cream); letter-spacing: 0.01em;
-        }
-        .co-nav-right { display: flex; align-items: center; gap: 0.875rem; }
-.co-nav-cart-btn {
-          position: relative;
-          display: flex; align-items: center; justify-content: center;
-          width: 38px; height: 38px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 9px; color: var(--cream);
-          transition: background 0.2s; text-decoration: none;
-        }
-        .co-nav-cart-btn:hover { background: rgba(255,255,255,0.12); }
-        .co-nav-cart-badge {
-          position: absolute; top: -5px; right: -5px;
-          min-width: 18px; height: 18px;
-          background: var(--terra); color: white;
-          font-size: 0.62rem; font-weight: 700;
-          border-radius: 100px; padding: 0 4px;
-          display: flex; align-items: center; justify-content: center;
-          border: 1.5px solid var(--forest);
-        }
-        .co-nav-admin {
-          font-size: 0.72rem; font-weight: 500;
-          color: rgba(247,243,236,0.85);
-          text-transform: uppercase; letter-spacing: 0.1em;
-          border: 1px solid rgba(247,243,236,0.18);
-          padding: 0.4rem 1rem; border-radius: 100px;
-          transition: all 0.2s ease;
-        }
-        .co-nav-admin:hover { background: rgba(247,243,236,0.09); color: var(--cream); }
-        @media (max-width: 768px) {
-          .co-nav-admin { display: none; }
-          .co-nav-crumb { display: none; }
-          .co-nav-inner { padding: 0 1.25rem; }
-        }
-
         /* ─── PAGE ──────────────────────────────────────────────────── */
         .co-page {
           min-height: 100vh; background: var(--cream);
@@ -499,29 +420,7 @@ function CheckoutContent() {
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      {/* ── NAV ── */}
-      <nav className={`co-nav${scrolled ? " scrolled" : ""}`}>
-        <div className="co-nav-inner">
-          <Link href={`/${locale}`} className="co-nav-logo">
-            <div className="co-nav-logo-icon"><LeafSVG size={40} wide /></div>
-          </Link>
-          <div className="co-nav-right">
-            <LanguageSwitcher />
-            <Link href={`/${locale}/cart`} className="co-nav-cart-btn" aria-label="Cart">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-              </svg>
-              {itemCount > 0 && <span className="co-nav-cart-badge">{itemCount}</span>}
-            </Link>
-            {session && (
-              <Link href={`/${locale}/admin`} className="co-nav-admin">
-                {t("navigation.admin")}
-              </Link>
-            )}
-          </div>
-        </div>
-      </nav>
+      <StoreNav showCart />
 
       <div className="co-page">
         {/* Header */}

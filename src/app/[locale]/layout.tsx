@@ -3,6 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "../providers";
+import { CartProvider } from "@/context/CartContext";
 
 export default async function LocaleLayout({
   children,
@@ -21,7 +22,9 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Providers>{children}</Providers>
+      <Providers>
+        <CartProvider>{children}</CartProvider>
+      </Providers>
     </NextIntlClientProvider>
   );
 }

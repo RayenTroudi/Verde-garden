@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useCart } from "@/context/CartContext";
+import StoreNav from "@/components/StoreNav";
 
 interface Plant {
   _id: string;
@@ -32,12 +33,6 @@ const LeafSVG = ({ size = 48 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const BackArrow = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -74,10 +69,44 @@ export default function PlantDetailPage() {
   const id = params.id as string;
   const locale = useLocale();
   const t = useTranslations();
+  const router = useRouter();
+  const { addItem } = useCart();
 
   const [plant, setPlant] = useState<Plant | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+
+  const handleAddToCart = useCallback(() => {
+    if (!plant || plant.stock <= 0) return;
+    addItem({
+      plantId: plant._id,
+      name: plant.name,
+      imageUrl: plant.imageUrl,
+      price: plant.price,
+      quantity: qty,
+      stock: plant.stock,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  }, [plant, qty, addItem]);
+
+  const handleBuyNow = useCallback(() => {
+    if (!plant || plant.stock <= 0) return;
+    const item = {
+      plantId: plant._id,
+      name: plant.name,
+      imageUrl: plant.imageUrl,
+      price: plant.price,
+      quantity: qty,
+      stock: plant.stock,
+    };
+    try {
+      sessionStorage.setItem("vg_buynow", JSON.stringify(item));
+    } catch { /* ignore */ }
+    router.push(`/${locale}/checkout?buynow=1`);
+  }, [plant, qty, locale, router]);
 
   useEffect(() => {
     fetch(`/api/plants/${id}`)
@@ -100,50 +129,6 @@ export default function PlantDetailPage() {
   return (
     <>
       <style>{`
-        /* ─── NAV ──────────────────────────────────────── */
-        .pd-nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          background: var(--forest);
-          box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 4px 20px rgba(0,0,0,0.2);
-        }
-        .pd-nav-inner {
-          max-width: 1400px; margin: 0 auto;
-          padding: 0 2rem; height: 68px;
-          display: flex; align-items: center; justify-content: space-between;
-        }
-        .pd-logo {
-          display: flex; align-items: center; gap: 0.55rem; text-decoration: none;
-        }
-        .pd-logo-icon {
-          width: 34px; height: 34px;
-          background: rgba(184,212,176,0.15);
-          border: 1px solid rgba(184,212,176,0.3);
-          border-radius: 9px;
-          display: grid; place-items: center;
-          color: var(--mint);
-        }
-        .pd-logo-text {
-          font-family: var(--font-display);
-          font-size: 1.35rem; font-weight: 500;
-          color: var(--cream);
-        }
-        .pd-nav-right { display: flex; align-items: center; gap: 0.75rem; }
-        .pd-back {
-          display: inline-flex; align-items: center; gap: 0.4rem;
-          font-size: 0.75rem; font-weight: 500;
-          color: rgba(247,243,236,0.8);
-          text-transform: uppercase; letter-spacing: 0.1em;
-          border: 1px solid rgba(247,243,236,0.18);
-          padding: 0.4rem 1rem; border-radius: 8px;
-          transition: all 0.2s ease;
-          text-decoration: none;
-        }
-        .pd-back:hover {
-          background: rgba(247,243,236,0.08);
-          border-color: rgba(247,243,236,0.32);
-          color: var(--cream);
-        }
-
         /* ─── PAGE ─────────────────────────────────────── */
         .pd-page {
           min-height: 100vh;
@@ -313,6 +298,63 @@ export default function PlantDetailPage() {
           line-height: 1.3;
         }
 
+        /* ─── ACTIONS ──────────────────────────────────── */
+        .pd-qty-row {
+          display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+        }
+        .pd-qty-label {
+          font-size: 0.78rem; font-weight: 500; color: var(--text-muted);
+          white-space: nowrap;
+        }
+        .pd-qty-ctrl {
+          display: flex; align-items: center; gap: 0; border-radius: 10px;
+          border: 1.5px solid var(--parchment); overflow: hidden;
+          background: var(--white);
+        }
+        .pd-qty-btn {
+          width: 36px; height: 36px;
+          border: none; background: none; color: var(--text);
+          font-size: 1.1rem; font-weight: 500; cursor: pointer;
+          transition: background 0.15s;
+          display: grid; place-items: center;
+        }
+        .pd-qty-btn:hover:not(:disabled) { background: rgba(127,168,107,0.1); }
+        .pd-qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .pd-qty-val {
+          min-width: 38px; text-align: center;
+          font-size: 0.95rem; font-weight: 600; color: var(--text);
+          border-left: 1px solid var(--parchment);
+          border-right: 1px solid var(--parchment);
+          line-height: 36px;
+        }
+        .pd-actions {
+          display: flex; gap: 0.75rem; flex-wrap: wrap;
+        }
+        .pd-btn-cart {
+          flex: 1; min-width: 140px;
+          display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+          padding: 0.85rem 1.25rem;
+          background: var(--forest); color: var(--cream);
+          border: none; border-radius: 12px;
+          font-size: 0.9rem; font-weight: 600;
+          cursor: pointer; transition: background 0.18s, transform 0.15s;
+          box-shadow: 0 2px 8px rgba(28,58,30,0.18);
+        }
+        .pd-btn-cart:hover:not(:disabled) { background: var(--forest-light); transform: translateY(-1px); }
+        .pd-btn-cart:disabled { opacity: 0.45; cursor: not-allowed; }
+        .pd-btn-cart.added { background: #16a34a; }
+        .pd-btn-buynow {
+          flex: 1; min-width: 140px;
+          display: flex; align-items: center; justify-content: center; gap: 0.45rem;
+          padding: 0.85rem 1.25rem;
+          background: none; color: var(--forest);
+          border: 2px solid var(--forest); border-radius: 12px;
+          font-size: 0.9rem; font-weight: 600;
+          cursor: pointer; transition: background 0.18s, transform 0.15s;
+        }
+        .pd-btn-buynow:hover:not(:disabled) { background: rgba(28,58,30,0.06); transform: translateY(-1px); }
+        .pd-btn-buynow:disabled { opacity: 0.45; cursor: not-allowed; }
+
         /* ─── STATES ───────────────────────────────────── */
         .pd-loading {
           display: flex; align-items: center; justify-content: center;
@@ -340,7 +382,6 @@ export default function PlantDetailPage() {
           .pd-container { padding: 2rem 1.5rem; }
         }
         @media (max-width: 600px) {
-          .pd-nav-inner { padding: 0 1.25rem; }
           .pd-container { padding: 1.5rem 1.25rem 3rem; }
           .pd-img-wrap { aspect-ratio: 16/10; max-height: 300px; }
           .pd-name { font-size: clamp(1.8rem, 6vw, 2.25rem); }
@@ -350,19 +391,7 @@ export default function PlantDetailPage() {
         }
       `}</style>
 
-      <nav className="pd-nav">
-        <div className="pd-nav-inner">
-          <Link href={`/${locale}`} className="pd-logo">
-            <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "32px", width: "auto", display: "block" }} />
-          </Link>
-          <div className="pd-nav-right">
-            <LanguageSwitcher />
-            <Link href={`/${locale}`} className="pd-back">
-              <BackArrow /> {t("common.back")}
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <StoreNav showCart showBack />
 
       <main className="pd-page">
         {/* Breadcrumb strip */}
@@ -393,8 +422,8 @@ export default function PlantDetailPage() {
           {error && (
             <div className="pd-error">
               <p>{t("errors.loadFailed")}</p>
-              <Link href={`/${locale}`} className="pd-back" style={{ color: "var(--forest)", borderColor: "var(--parchment)" }}>
-                <BackArrow /> {t("common.back")}
+              <Link href={`/${locale}`} style={{ color: "var(--forest)", fontSize: "0.875rem" }}>
+                {t("common.back")}
               </Link>
             </div>
           )}
@@ -457,6 +486,34 @@ export default function PlantDetailPage() {
                   </div>
                   <span className={`pd-stock-chip ${stock.variant}`}>{stock.text}</span>
                 </div>
+
+                {plant.stock > 0 && (
+                  <>
+                    <div className="pd-qty-row">
+                      <span className="pd-qty-label">Qty</span>
+                      <div className="pd-qty-ctrl">
+                        <button className="pd-qty-btn" onClick={() => setQty((q) => Math.max(1, q - 1))} disabled={qty <= 1} aria-label="Decrease quantity">−</button>
+                        <span className="pd-qty-val">{qty}</span>
+                        <button className="pd-qty-btn" onClick={() => setQty((q) => Math.min(plant.stock, q + 1))} disabled={qty >= plant.stock} aria-label="Increase quantity">+</button>
+                      </div>
+                    </div>
+                    <div className="pd-actions">
+                      <button
+                        className={`pd-btn-cart${added ? " added" : ""}`}
+                        onClick={handleAddToCart}
+                      >
+                        {added ? (
+                          <>✓ {t("cart.added")}</>
+                        ) : (
+                          <>{t("cart.addToCart")}</>
+                        )}
+                      </button>
+                      <button className="pd-btn-buynow" onClick={handleBuyNow}>
+                        {t("cart.buyNow")}
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 {(plant.careInstructions?.wateringFrequency ||
                   plant.careInstructions?.lightRequirements ||

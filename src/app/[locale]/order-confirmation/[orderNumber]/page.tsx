@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { use } from "react";
+import StoreNav from "@/components/StoreNav";
 
 interface OrderItem {
   plantId: string;
@@ -63,16 +64,6 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
         .conf-page {
           min-height: 100vh; background: var(--cream);
           padding-top: 68px;
-        }
-        .conf-nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          background: var(--forest); height: 68px;
-          display: flex; align-items: center; padding: 0 2rem;
-        }
-        .conf-nav-logo {
-          font-family: var(--font-display);
-          font-size: 1.3rem; color: var(--cream);
-          display: flex; align-items: center; gap: 0.5rem;
         }
         .conf-body {
           max-width: 720px; margin: 0 auto;
@@ -202,12 +193,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
         .conf-error { color: #dc2626; }
       `}</style>
 
-      {/* Fixed nav */}
-      <nav className="conf-nav">
-        <Link href={`/${locale}`} className="conf-nav-logo">
-          <img src="/icons/logo.svg" width="28" height="28" alt="Verde Garden" style={{ display: "block", borderRadius: 4 }} />
-        </Link>
-      </nav>
+      <StoreNav showCart={false} showBack />
 
       <div className="conf-page">
         <div className="conf-body">

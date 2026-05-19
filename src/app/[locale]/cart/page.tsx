@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import StoreNav from "@/components/StoreNav";
+
 const SHIPPING_THRESHOLD = 150;
 const SHIPPING_COST = 7;
 
@@ -29,6 +31,7 @@ export default function CartPage() {
           background: var(--cream);
           display: flex;
           flex-direction: column;
+          padding-top: 68px;
         }
 
         /* ─── PAGE HEADER (dark band below nav) ────────────────────── */
@@ -326,6 +329,8 @@ export default function CartPage() {
           .cart-summary { padding: 1.25rem; }
         }
       `}</style>
+
+      <StoreNav showCart showBack backHref={`/${locale}`} />
 
       <div className="cart-page">
         {/* ── PAGE HEADER ── */}

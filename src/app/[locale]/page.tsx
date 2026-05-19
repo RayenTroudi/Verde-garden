@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useSession } from "next-auth/react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useCart } from "@/context/CartContext";
+import StoreNav from "@/components/StoreNav";
 
 interface Plant {
   _id: string;
@@ -35,6 +37,7 @@ const SearchSVG = () => (
     <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
+
 
 
 const LeafDecoration = () => (
@@ -125,16 +128,57 @@ const difficultyConfig: Record<string, { color: string; bg: string; label: strin
 };
 
 export default function HomePage() {
-  const { data: session } = useSession();
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { addItem } = useCart();
   const [plants, setPlants] = useState<Plant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+
+  const handleAddToCart = useCallback((e: React.MouseEvent, plant: Plant) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (plant.stock <= 0) return;
+    addItem({
+      plantId: plant._id,
+      name: plant.name,
+      imageUrl: plant.imageUrl,
+      price: plant.price,
+      quantity: 1,
+      stock: plant.stock,
+    });
+    setAddedIds((prev) => new Set(prev).add(plant._id));
+    setTimeout(() => {
+      setAddedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(plant._id);
+        return next;
+      });
+    }, 1500);
+  }, [addItem]);
+
+  const handleBuyNow = useCallback((e: React.MouseEvent, plant: Plant) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (plant.stock <= 0) return;
+    const item = {
+      plantId: plant._id,
+      name: plant.name,
+      imageUrl: plant.imageUrl,
+      price: plant.price,
+      quantity: 1,
+      stock: plant.stock,
+    };
+    try {
+      sessionStorage.setItem("vg_buynow", JSON.stringify(item));
+    } catch { /* ignore */ }
+    router.push(`/${locale}/checkout?buynow=1`);
+  }, [locale, router]);
 
   useEffect(() => {
     fetch("/api/plants")
@@ -143,17 +187,6 @@ export default function HomePage() {
       .catch(() => { setError(t("errors.loadFailed")); setLoading(false); });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [mobileMenuOpen]);
 
   const categories = useMemo(() => Array.from(new Set(plants.map((p) => p.category).filter(Boolean))).sort(), [plants]);
 
@@ -179,112 +212,6 @@ export default function HomePage() {
   return (
     <>
       <style>{`
-        /* ─── NAV ─────────────────────────────────────────────────────────── */
-        .vg-nav {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          background: var(--forest);
-          transition: box-shadow 0.3s ease, background 0.3s ease;
-        }
-        .vg-nav.scrolled {
-          background: rgba(15,32,16,0.96);
-          backdrop-filter: blur(14px);
-          box-shadow: 0 1px 0 rgba(255,255,255,0.06), 0 4px 32px rgba(0,0,0,0.25);
-        }
-        .vg-nav-inner {
-          max-width: 1400px; margin: 0 auto;
-          padding: 0 2rem; height: 68px;
-          display: flex; align-items: center; justify-content: space-between;
-        }
-        .vg-logo {
-          display: flex; align-items: center; gap: 0.55rem;
-          text-decoration: none;
-        }
-        .vg-logo-icon {
-          width: 34px; height: 34px;
-          background: rgba(184,212,176,0.15);
-          border: 1px solid rgba(184,212,176,0.3);
-          border-radius: 9px;
-          display: grid; place-items: center;
-          color: var(--mint);
-          transition: background 0.2s;
-        }
-        .vg-logo:hover .vg-logo-icon { background: rgba(184,212,176,0.22); }
-        .vg-logo-text {
-          font-family: var(--font-display);
-          font-size: 1.35rem; font-weight: 500;
-          color: var(--cream); letter-spacing: 0.01em;
-        }
-        .vg-nav-right { display: flex; align-items: center; gap: 0.875rem; }
-        .vg-nav-count {
-          font-size: 0.72rem; font-weight: 400;
-          color: rgba(247,243,236,0.4);
-          letter-spacing: 0.08em;
-          background: rgba(255,255,255,0.05);
-          padding: 0.3rem 0.8rem;
-          border-radius: 100px;
-          border: 1px solid rgba(255,255,255,0.07);
-        }
-        .vg-nav-admin {
-          font-size: 0.72rem; font-weight: 500;
-          color: rgba(247,243,236,0.85);
-          text-transform: uppercase; letter-spacing: 0.1em;
-          border: 1px solid rgba(247,243,236,0.18);
-          padding: 0.4rem 1rem; border-radius: 100px;
-          transition: all 0.2s ease;
-        }
-        .vg-nav-admin:hover {
-          background: rgba(247,243,236,0.09);
-          border-color: rgba(247,243,236,0.35);
-          color: var(--cream);
-        }
-        .vg-hamburger {
-          display: none;
-          flex-direction: column; justify-content: center; gap: 4.5px;
-          width: 38px; height: 38px; padding: 8px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px; cursor: pointer;
-          transition: background 0.2s;
-        }
-        .vg-hamburger:hover { background: rgba(255,255,255,0.1); }
-        .vg-hamburger span {
-          display: block; width: 100%; height: 1.5px;
-          background: var(--cream); border-radius: 2px;
-          transition: transform 0.25s ease, opacity 0.25s ease;
-        }
-        .vg-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-        .vg-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-        .vg-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-        .vg-mobile-menu {
-          display: none; position: fixed;
-          top: 68px; left: 0; right: 0;
-          background: rgba(12,26,13,0.98);
-          backdrop-filter: blur(18px);
-          z-index: 99; padding: 1.25rem 1.5rem 1.75rem;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
-          flex-direction: column; gap: 0.65rem;
-          animation: slideDown 0.2s ease;
-        }
-        .vg-mobile-menu.open { display: flex; }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .vg-mobile-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 0.25rem 0; }
-        .vg-mobile-admin-link {
-          display: inline-flex; align-items: center; gap: 0.4rem;
-          font-size: 0.78rem; font-weight: 500;
-          color: var(--mint); text-transform: uppercase; letter-spacing: 0.1em;
-          border: 1px solid rgba(184,212,176,0.25);
-          padding: 0.55rem 1.1rem; border-radius: 100px;
-          align-self: flex-start; transition: all 0.18s;
-        }
-        .vg-mobile-admin-link:hover { background: rgba(184,212,176,0.08); }
-        .vg-mobile-count {
-          font-size: 0.75rem; color: rgba(247,243,236,0.38);
-          padding: 0.5rem 0;
-        }
-
         /* ─── HERO ────────────────────────────────────────────────────────── */
         .vg-hero {
           background: var(--forest);
@@ -669,6 +596,39 @@ export default function HomePage() {
         .vg-stock-badge.ok   { color: #166534; background: #dcfce7; }
         .vg-stock-badge.low  { color: #92400e; background: #fef3c7; }
         .vg-stock-badge.out  { color: #991b1b; background: #fee2e2; }
+        .vg-card-actions {
+          display: flex; gap: 0.5rem; margin-top: 0.75rem;
+        }
+        .vg-add-to-cart {
+          flex: 1;
+          display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+          padding: 0.55rem 0.75rem;
+          background: var(--forest); color: var(--cream);
+          border: none; border-radius: 9px;
+          font-size: 0.78rem; font-weight: 600;
+          cursor: pointer;
+          transition: background 0.18s, transform 0.15s;
+          white-space: nowrap;
+        }
+        .vg-add-to-cart:hover:not(:disabled) { background: var(--forest-light); transform: translateY(-1px); }
+        .vg-add-to-cart:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        .vg-add-to-cart.added { background: #16a34a; }
+        .vg-buy-now {
+          display: flex; align-items: center; justify-content: center;
+          padding: 0.55rem 0.75rem;
+          background: none; color: var(--forest);
+          border: 1.5px solid var(--forest); border-radius: 9px;
+          font-size: 0.78rem; font-weight: 600;
+          cursor: pointer;
+          transition: background 0.18s, transform 0.15s;
+          white-space: nowrap;
+        }
+        .vg-buy-now:hover:not(:disabled) { background: rgba(28,58,30,0.07); transform: translateY(-1px); }
+        .vg-buy-now:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+        @media (max-width: 480px) {
+          .vg-add-to-cart { font-size: 0.73rem; padding: 0.5rem 0.6rem; }
+          .vg-buy-now { font-size: 0.73rem; padding: 0.5rem 0.6rem; }
+        }
 
         /* ─── SKELETON ────────────────────────────────────────────────────── */
         @keyframes shimmer {
@@ -747,10 +707,6 @@ export default function HomePage() {
           .vg-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
         }
         @media (max-width: 768px) {
-          .vg-nav-count { display: none; }
-          .vg-nav-admin { display: none; }
-          .vg-hamburger { display: flex; }
-          .vg-nav-right > .lang-switcher { display: none; }
           .vg-hero { padding: 7rem 1.25rem 5rem; }
           .vg-hero-subtitle { font-size: 0.9rem; }
           .vg-hero-orb-1 { width: 250px; height: 250px; }
@@ -774,7 +730,6 @@ export default function HomePage() {
           .vg-skeleton { height: 280px; }
         }
         @media (max-width: 480px) {
-          .vg-nav-inner { padding: 0 1.25rem; }
           .vg-grid { grid-template-columns: 1fr; gap: 0.875rem; }
           .vg-footer-inner { flex-direction: column; align-items: flex-start; }
           .vg-leaf--c { display: none; } .vg-leaf--e { display: none; }
@@ -785,46 +740,13 @@ export default function HomePage() {
       `}</style>
 
       <div>
-        {/* NAV */}
-        <nav className={`vg-nav${scrolled ? " scrolled" : ""}`}>
-          <div className="vg-nav-inner">
-            <Link href={`/${locale}`} className="vg-logo" onClick={() => setMobileMenuOpen(false)}>
-              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "52px", width: "auto", display: "block" }} />
-            </Link>
-            <div className="vg-nav-right">
-              <span className="vg-nav-count">
-                {loading ? "—" : `${plants.length} ${t("navigation.plants")}`}
-              </span>
-              <LanguageSwitcher />
-              {session && (
-                <Link href={`/${locale}/admin`} className="vg-nav-admin">
-                  {t("navigation.admin")}
-                </Link>
-              )}
-              <button
-                className={`vg-hamburger${mobileMenuOpen ? " open" : ""}`}
-                aria-label="Toggle menu"
-                aria-expanded={mobileMenuOpen}
-                onClick={() => setMobileMenuOpen((v) => !v)}
-              >
-                <span /><span /><span />
-              </button>
-            </div>
-          </div>
-
-          <div className={`vg-mobile-menu${mobileMenuOpen ? " open" : ""}`}>
-            <LanguageSwitcher />
-            <div className="vg-mobile-divider" />
-            <span className="vg-mobile-count">
-              {loading ? "—" : `${plants.length} ${t("navigation.plants")}`}
-            </span>
-            {session && (
-              <Link href={`/${locale}/admin`} className="vg-mobile-admin-link" onClick={() => setMobileMenuOpen(false)}>
-                {t("navigation.admin")}
-              </Link>
-            )}
-          </div>
-        </nav>
+        <StoreNav
+          showCart
+          showPlantCount
+          plantCount={plants.length}
+          loadingPlants={loading}
+          showMobileMenu
+        />
 
         {/* HERO */}
         <header className="vg-hero">
@@ -981,6 +903,28 @@ export default function HomePage() {
                               <span className={`vg-stock-badge ${stock.variant}`}>
                                 {stock.text}
                               </span>
+                            </div>
+                            <div className="vg-card-actions">
+                              <button
+                                className={`vg-add-to-cart${addedIds.has(plant._id) ? " added" : ""}`}
+                                onClick={(e) => handleAddToCart(e, plant)}
+                                disabled={plant.stock <= 0}
+                                aria-label={t("cart.addToCart")}
+                              >
+                                {addedIds.has(plant._id) ? (
+                                  <>✓ {t("cart.added")}</>
+                                ) : (
+                                  <>{t("cart.addToCart")}</>
+                                )}
+                              </button>
+                              <button
+                                className="vg-buy-now"
+                                onClick={(e) => handleBuyNow(e, plant)}
+                                disabled={plant.stock <= 0}
+                                aria-label={t("cart.buyNow")}
+                              >
+                                {t("cart.buyNow")}
+                              </button>
                             </div>
                           </div>
                         </article>
