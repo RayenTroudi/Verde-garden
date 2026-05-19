@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 const SHIPPING_THRESHOLD = 150;
 const SHIPPING_COST = 7;
 
-const Logo = () => (
-  <img src="/icons/logo.svg" alt="Verde Garden" style={{ display: "block", height: "100%", width: "auto" }} />
+const Logo = ({ size }: { size?: number }) => (
+  <img src="/icons/logo.svg" alt="Verde Garden" style={{ display: "block", height: size ? `${size}px` : "100%", width: "auto" }} />
 );
 
 export default function CartPage() {
