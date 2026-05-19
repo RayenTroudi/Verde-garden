@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
+import { AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -252,7 +253,7 @@ export default function LoginPage() {
           <div className="lg-panel-grid" />
           <div className="lg-panel-content">
             <a href={`/${locale}`} className="lg-panel-logo">
-              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "36px", width: "auto", display: "block" }} />
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "64px", width: "auto", display: "block" }} />
             </a>
           </div>
 
@@ -290,10 +291,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} noValidate>
               {error && (
                 <div className="lg-error">
-                  <svg className="lg-error-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
+                  <AlertCircle className="lg-error-icon" size={16} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
                   {error}
                 </div>
               )}

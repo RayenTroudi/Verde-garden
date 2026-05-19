@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import StoreNav from "@/components/StoreNav";
+import { MapPin, CreditCard, ArrowRight, ArrowLeft, Leaf, Banknote, Lock } from "lucide-react";
 
 const SHIPPING_THRESHOLD = 150;
 const SHIPPING_COST = 7;
@@ -450,9 +451,7 @@ function CheckoutContent() {
                 <div className="co-card">
                   <div className="co-card-header">
                     <div className="co-card-header-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                      </svg>
+                      <MapPin size={16} fill="currentColor" style={{ color: "#e07a4f" }} aria-hidden="true" />
                     </div>
                     <h2 className="co-card-title">{t("checkout.shippingInfo")}</h2>
                   </div>
@@ -503,9 +502,7 @@ function CheckoutContent() {
                     <div className="co-actions">
                       <button type="submit" className="co-btn-primary">
                         {t("checkout.continueToPayment")}
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
+                        <ArrowRight size={16} fill="currentColor" style={{ color: "#ffffff" }} aria-hidden="true" />
                       </button>
                     </div>
                   </div>
@@ -518,9 +515,7 @@ function CheckoutContent() {
               <div className="co-card">
                 <div className="co-card-header">
                   <div className="co-card-header-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
-                    </svg>
+                    <CreditCard size={16} fill="currentColor" style={{ color: "#5b9bd5" }} aria-hidden="true" />
                   </div>
                   <h2 className="co-card-title">{t("checkout.paymentMethod")}</h2>
                 </div>
@@ -532,7 +527,7 @@ function CheckoutContent() {
                   >
                     <div className="co-pay-radio" />
                     <div className="co-pay-info">
-                      <div className="co-pay-label">💵 {t("checkout.cashOnDelivery")}</div>
+                      <div className="co-pay-label"><Banknote size={14} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#4a9e6b" }} aria-hidden="true" />{t("checkout.cashOnDelivery")}</div>
                       <div className="co-pay-desc">{t("checkout.cashOnDeliveryDesc")}</div>
                     </div>
                   </div>
@@ -544,7 +539,7 @@ function CheckoutContent() {
                   >
                     <div className="co-pay-radio" />
                     <div className="co-pay-info">
-                      <div className="co-pay-label">💳 {t("checkout.onlinePayment")}</div>
+                      <div className="co-pay-label"><CreditCard size={14} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#5b9bd5" }} aria-hidden="true" />{t("checkout.onlinePayment")}</div>
                       <div className="co-pay-desc">{t("checkout.onlinePaymentDesc")}</div>
                       {paymentMethod === "online" && (
                         <>
@@ -563,7 +558,7 @@ function CheckoutContent() {
                             </div>
                           </div>
                           <div className="co-pay-notice">
-                            🔒 {t("checkout.onlinePaymentNotice")}
+                            <Lock size={12} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#e8a838" }} aria-hidden="true" />{t("checkout.onlinePaymentNotice")}
                           </div>
                         </>
                       )}
@@ -572,9 +567,7 @@ function CheckoutContent() {
 
                   <div className="co-actions">
                     <button className="co-btn-secondary" onClick={() => setStep("shipping")}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M19 12H5M12 5l-7 7 7 7"/>
-                      </svg>
+                      <ArrowLeft size={14} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                       {t("checkout.backToShipping")}
                     </button>
                     <button
@@ -604,7 +597,7 @@ function CheckoutContent() {
                     <Image src={item.imageUrl} alt={item.name[locale as "fr" | "en"] ?? item.name.en} fill style={{ objectFit: "contain", padding: "3px" }} sizes="46px" />
                   ) : (
                     <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "var(--sand)" }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/></svg>
+                      <Leaf size={18} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                     </div>
                   )}
                 </div>

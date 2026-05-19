@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { X } from "lucide-react";
 
 interface OrderItem {
   plantId: string;
@@ -450,7 +451,7 @@ export default function AdminOrdersPage() {
             <div className="ao-modal-header">
               <h2 className="ao-modal-title">{selectedOrder.orderNumber}</h2>
               <button className="ao-modal-close" onClick={() => setSelectedOrder(null)}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                <X size={14} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
               </button>
             </div>
             <div className="ao-modal-body">

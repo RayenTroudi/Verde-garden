@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useCart } from "@/context/CartContext";
+import { ShoppingCart, ArrowLeft } from "lucide-react";
 
 interface StoreNavProps {
   showCart?: boolean;
@@ -16,19 +17,6 @@ interface StoreNavProps {
   showMobileMenu?: boolean;
   loadingPlants?: boolean;
 }
-
-const CartIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-  </svg>
-);
-
-const BackIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M19 12H5M12 5l-7 7 7 7"/>
-  </svg>
-);
 
 export default function StoreNav({
   showCart = true,
@@ -206,14 +194,14 @@ export default function StoreNav({
 
             {showCart && (
               <Link href={`/${locale}/cart`} className="sn-cart" aria-label={t("cart.viewCart")}>
-                <CartIcon />
+                <ShoppingCart size={17} aria-hidden="true" />
                 {itemCount > 0 && <span className="sn-cart-badge">{itemCount}</span>}
               </Link>
             )}
 
             {showBack && (
               <Link href={resolvedBackHref} className="sn-back">
-                <BackIcon />
+                <ArrowLeft size={14} fill="currentColor" style={{ color: "#b8d4b0" }} aria-hidden="true" />
                 {t("common.back")}
               </Link>
             )}
@@ -248,7 +236,7 @@ export default function StoreNav({
             )}
             {showCart && (
               <Link href={`/${locale}/cart`} className="sn-back" style={{ alignSelf: "flex-start" }} onClick={() => setMobileMenuOpen(false)}>
-                <CartIcon />
+                <ShoppingCart size={14} aria-hidden="true" />
                 {t("cart.viewCart")}
                 {itemCount > 0 && <span style={{ marginLeft: "0.3rem", background: "#e07a4f", color: "white", borderRadius: "100px", padding: "0 6px", fontSize: "0.62rem", fontWeight: 700 }}>{itemCount}</span>}
               </Link>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import StoreNav from "@/components/StoreNav";
+import { ShoppingCart, Leaf, Trash2, ArrowRight } from "lucide-react";
 
 const SHIPPING_THRESHOLD = 150;
 const SHIPPING_COST = 7;
@@ -357,28 +358,19 @@ export default function CartPage() {
             {items.length === 0 ? (
               <div className="cart-empty">
                 <div className="cart-empty-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                  </svg>
+                  <ShoppingCart size={32} aria-hidden="true" />
                 </div>
                 <h3>{t("cart.empty")}</h3>
                 <p>{t("cart.emptyDesc")}</p>
                 <Link href={`/${locale}`} className="cart-empty-cta">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
-                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                  </svg>
+                  <Leaf size={14} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                   {t("cart.browsePlants")}
                 </Link>
               </div>
             ) : (
               <div className="cart-items-card">
                 <div className="cart-items-header">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                  </svg>
+                  <ShoppingCart size={13} aria-hidden="true" />
                   {t("cart.yourItems")}
                 </div>
                 {items.map((item) => (
@@ -418,12 +410,7 @@ export default function CartPage() {
                       {(item.price * item.quantity).toFixed(2)}<span>TND</span>
                     </div>
                     <button className="cart-item-remove" onClick={() => removeItem(item.plantId)} aria-label="Remove item">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        <path d="M10 11v6M14 11v6"/>
-                        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
-                      </svg>
+                      <Trash2 size={15} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
                     </button>
                   </div>
                 ))}
@@ -449,7 +436,7 @@ export default function CartPage() {
               </div>
               {subtotal < SHIPPING_THRESHOLD && (
                 <div className="shipping-note">
-                  🌿 {t("cart.shippingNote", { amount: (SHIPPING_THRESHOLD - subtotal).toFixed(2) })}
+                  <Leaf size={12} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#7fa86b" }} aria-hidden="true" />{t("cart.shippingNote", { amount: (SHIPPING_THRESHOLD - subtotal).toFixed(2) })}
                 </div>
               )}
               <div className="summary-row-total">
@@ -458,9 +445,7 @@ export default function CartPage() {
               </div>
               <button className="checkout-btn" onClick={() => router.push(`/${locale}/checkout`)}>
                 {t("cart.proceedToCheckout")}
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
+                <ArrowRight size={15} fill="currentColor" style={{ color: "#ffffff" }} aria-hidden="true" />
               </button>
               <Link href={`/${locale}`} className="continue-link">
                 ← {t("cart.continueShopping")}

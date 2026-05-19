@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Leaf, Droplets, Sun } from "lucide-react";
 
 interface Plant {
   _id: string;
@@ -33,12 +34,6 @@ const difficultyColor: Record<string, string> = {
   Hard: "#c0543a",
 };
 
-const LeafIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
 
 export default function PlantDetailPage() {
   const params = useParams();
@@ -146,7 +141,7 @@ export default function PlantDetailPage() {
                   />
                 ) : (
                   <div className="pd-img-placeholder">
-                    <LeafIcon />
+                    <Leaf size={48} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                   </div>
                 )}
                 {plant.careInstructions?.difficulty && (
@@ -190,13 +185,13 @@ export default function PlantDetailPage() {
                       <div className="pd-care-grid">
                         {plant.careInstructions.wateringFrequency && (
                           <div className="pd-care-card">
-                            <div className="pd-care-label">💧 {t("plant.wateringFrequency")}</div>
+                            <div className="pd-care-label"><Droplets size={12} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.25rem", color: "#5b9bd5" }} aria-hidden="true" />{t("plant.wateringFrequency")}</div>
                             <div className="pd-care-value">{plant.careInstructions.wateringFrequency}</div>
                           </div>
                         )}
                         {plant.careInstructions.lightRequirements && (
                           <div className="pd-care-card">
-                            <div className="pd-care-label">☀️ {t("plant.lightRequirements")}</div>
+                            <div className="pd-care-label"><Sun size={12} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.25rem", color: "#e8a838" }} aria-hidden="true" />{t("plant.lightRequirements")}</div>
                             <div className="pd-care-value">{plant.careInstructions.lightRequirements}</div>
                           </div>
                         )}

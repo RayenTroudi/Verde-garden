@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { use } from "react";
 import StoreNav from "@/components/StoreNav";
+import { Check, Package, ClipboardList, Truck, Leaf, Banknote, CreditCard } from "lucide-react";
 
 interface OrderItem {
   plantId: string;
@@ -206,9 +207,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
               {/* Success */}
               <div className="conf-success">
                 <div className="conf-checkmark">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
+                  <Check size={32} fill="currentColor" style={{ color: "#166534" }} aria-hidden="true" />
                 </div>
                 <h1 className="conf-success-title">{t("checkout.orderPlaced")}</h1>
                 <p className="conf-success-sub">{t("checkout.orderPlacedDesc", { email: order.shipping.email })}</p>
@@ -218,7 +217,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
               {/* Items */}
               <div className="conf-card">
                 <div className="conf-card-header">
-                  📦 {t("checkout.orderedItems")}
+                  <Package size={14} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem", color: "#e07a4f" }} aria-hidden="true" />{t("checkout.orderedItems")}
                 </div>
                 <div className="conf-card-body">
                   {order.items.map((item, i) => (
@@ -228,7 +227,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
                           <Image src={item.imageUrl} alt={item.name[locale as "fr" | "en"] ?? item.name.en} fill style={{ objectFit: "contain", padding: "3px" }} sizes="56px" />
                         ) : (
                           <div style={{ width: "100%", height: "100%", display: "grid", placeItems: "center", color: "var(--sand)" }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/></svg>
+                            <Leaf size={20} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                           </div>
                         )}
                       </div>
@@ -257,13 +256,17 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
 
               {/* Order info */}
               <div className="conf-card">
-                <div className="conf-card-header">📋 {t("checkout.orderDetails")}</div>
+                <div className="conf-card-header"><ClipboardList size={14} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem", color: "#7fa86b" }} aria-hidden="true" />{t("checkout.orderDetails")}</div>
                 <div className="conf-card-body">
                   <div className="conf-info-grid">
                     <div className="conf-info-item">
                       <div className="conf-info-label">{t("checkout.paymentMethod")}</div>
                       <div className="conf-info-val">
-                        {order.paymentMethod === "cash_on_delivery" ? `💵 ${t("checkout.cashOnDelivery")}` : `💳 ${t("checkout.onlinePayment")}`}
+                        {order.paymentMethod === "cash_on_delivery" ? (
+                          <><Banknote size={13} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#4a9e6b" }} aria-hidden="true" />{t("checkout.cashOnDelivery")}</>
+                        ) : (
+                          <><CreditCard size={13} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.3rem", color: "#5b9bd5" }} aria-hidden="true" />{t("checkout.onlinePayment")}</>
+                        )}
                       </div>
                     </div>
                     <div className="conf-info-item">
@@ -292,7 +295,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
 
               {/* Shipping */}
               <div className="conf-card">
-                <div className="conf-card-header">🚚 {t("checkout.shippingInfo")}</div>
+                <div className="conf-card-header"><Truck size={14} fill="currentColor" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.4rem", color: "#5b9bd5" }} aria-hidden="true" />{t("checkout.shippingInfo")}</div>
                 <div className="conf-card-body">
                   <div className="conf-info-grid">
                     <div className="conf-info-item">
@@ -327,10 +330,7 @@ export default function OrderConfirmationPage({ params }: { params: Promise<{ or
 
               <div className="conf-cta">
                 <Link href={`/${locale}`} className="conf-cta-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/>
-                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                  </svg>
+                  <Leaf size={16} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                   {t("checkout.continueShopping")}
                 </Link>
               </div>

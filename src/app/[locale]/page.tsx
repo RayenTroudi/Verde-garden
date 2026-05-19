@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/context/CartContext";
 import StoreNav from "@/components/StoreNav";
+import { Leaf, Search, Droplets, Sun } from "lucide-react";
 
 interface Plant {
   _id: string;
@@ -24,19 +25,6 @@ interface Plant {
   };
 }
 
-const LeafSVG = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const SearchSVG = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5" />
-    <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
 
 
 
@@ -755,10 +743,6 @@ export default function HomePage() {
           <div className="vg-hero-orb vg-hero-orb-1" />
           <div className="vg-hero-orb vg-hero-orb-2" />
           <div className="vg-hero-content">
-            <div className="vg-hero-eyebrow">
-              <span className="vg-hero-eyebrow-dot" />
-              {t("home.tagline")}
-            </div>
             <h1 className="vg-hero-title">
               {t("home.title")} <em>{t("home.titleEm")}</em><br />{t("home.titleEnd")}
             </h1>
@@ -771,7 +755,7 @@ export default function HomePage() {
         <section className="vg-filters">
           <div className="vg-filters-inner">
             <div className="vg-search-wrap">
-              <span className="vg-search-icon"><SearchSVG /></span>
+              <span className="vg-search-icon"><Search size={16} aria-hidden="true" /></span>
               <input
                 type="text"
                 className="vg-search"
@@ -816,7 +800,7 @@ export default function HomePage() {
               <div className="vg-error"><p>{error}</p></div>
             ) : filtered.length === 0 ? (
               <div className="vg-empty">
-                <div className="vg-empty-icon"><LeafSVG /></div>
+                <div className="vg-empty-icon"><Leaf size={28} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                 <h3>{plants.length === 0 ? t("home.emptyGarden") : t("home.noResults")}</h3>
                 <p>{plants.length === 0 ? t("home.emptyGardenDesc") : t("home.noResultsDesc")}</p>
                 {plants.length === 0 && session && (
@@ -856,7 +840,7 @@ export default function HomePage() {
                                 style={{ objectFit: "contain", objectPosition: "center top", padding: "8px" }}
                               />
                             ) : (
-                              <div className="vg-card-placeholder"><LeafSVG /></div>
+                              <div className="vg-card-placeholder"><Leaf size={40} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                             )}
                             {diffCfg && (
                               <div className="vg-badge-wrap">
@@ -886,12 +870,12 @@ export default function HomePage() {
                               <div className="vg-card-care">
                                 {plant.careInstructions.wateringFrequency && (
                                   <span className="vg-care-tag">
-                                    💧 {plant.careInstructions.wateringFrequency}
+                                    <Droplets size={11} fill="currentColor" style={{ color: "#5b9bd5" }} aria-hidden="true" /> {plant.careInstructions.wateringFrequency}
                                   </span>
                                 )}
                                 {plant.careInstructions.lightRequirements && (
                                   <span className="vg-care-tag">
-                                    ☀️ {plant.careInstructions.lightRequirements}
+                                    <Sun size={11} fill="currentColor" style={{ color: "#e8a838" }} aria-hidden="true" /> {plant.careInstructions.lightRequirements}
                                   </span>
                                 )}
                               </div>
@@ -941,7 +925,7 @@ export default function HomePage() {
         <footer className="vg-footer">
           <div className="vg-footer-inner">
             <div className="vg-footer-brand">
-              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "28px", width: "auto", display: "block" }} />
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "42px", width: "auto", display: "block" }} />
             </div>
             {session && (
               <div className="vg-footer-links">

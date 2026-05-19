@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Leaf, LayoutGrid, Plus, List, Pencil, Trash2, Upload, QrCode, Download, RefreshCw } from "lucide-react";
 
 interface Plant {
   _id: string;
@@ -70,49 +71,6 @@ const CATEGORIES = [
   "Other",
 ];
 
-const LeafIcon = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const GridIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
-    <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
-    <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
-    <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.5" />
-  </svg>
-);
-const PlusIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-const ListIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
-const EditIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const TrashIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-const UploadIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <polyline points="17 8 12 3 7 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-);
 
 export default function AdminPage() {
   const t = useTranslations();
@@ -290,9 +248,9 @@ export default function AdminPage() {
   };
 
   const navItems: { id: Tab; icon: React.ReactNode; label: string }[] = [
-    { id: "overview", icon: <GridIcon />, label: t("admin.overview") },
-    { id: "add", icon: <PlusIcon />, label: editingId ? t("admin.editPlant") : t("admin.addPlant") },
-    { id: "manage", icon: <ListIcon />, label: t("admin.managePlants") },
+    { id: "overview", icon: <LayoutGrid size={18} fill="currentColor" style={{ color: "#b8d4b0" }} aria-hidden="true" />, label: t("admin.overview") },
+    { id: "add", icon: <Plus size={18} fill="currentColor" style={{ color: "#b8d4b0" }} aria-hidden="true" />, label: editingId ? t("admin.editPlant") : t("admin.addPlant") },
+    { id: "manage", icon: <List size={18} fill="currentColor" style={{ color: "#b8d4b0" }} aria-hidden="true" />, label: t("admin.managePlants") },
   ];
 
   const topbarTitle = () => {
@@ -573,7 +531,7 @@ export default function AdminPage() {
             <div className="adm-topbar-actions">
               {tab !== "add" && (
                 <button className="adm-add-btn" onClick={() => { resetForm(); setTab("add"); }}>
-                  <PlusIcon />
+                  <Plus size={18} fill="currentColor" style={{ color: "#ffffff" }} aria-hidden="true" />
                   {t("admin.addPlant")}
                 </button>
               )}
@@ -626,7 +584,7 @@ export default function AdminPage() {
                   </div>
                 ) : plants.length === 0 ? (
                   <div className="adm-empty">
-                    <div className="adm-empty-icon"><LeafIcon size={24} /></div>
+                    <div className="adm-empty-icon"><Leaf size={24} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                     <h3>{t("admin.noPlants")}</h3>
                     <p>{t("admin.addFirstPlant")}</p>
                   </div>
@@ -739,7 +697,7 @@ export default function AdminPage() {
                         </>
                       ) : (
                         <>
-                          <div className="adm-upload-icon"><UploadIcon /></div>
+                          <div className="adm-upload-icon"><Upload size={22} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                           <p className="adm-upload-text">{t("admin.dragDrop")}</p>
                           <p className="adm-upload-hint">{t("admin.imageFormats")}</p>
                         </>
@@ -776,7 +734,7 @@ export default function AdminPage() {
                   </div>
                 ) : plants.length === 0 ? (
                   <div className="adm-empty">
-                    <div className="adm-empty-icon"><LeafIcon size={24} /></div>
+                    <div className="adm-empty-icon"><Leaf size={24} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                     <h3>{t("admin.noPlants")}</h3>
                     <p>{t("admin.addFirstPlant")}</p>
                   </div>
@@ -892,10 +850,7 @@ function PlantCard({
           <Image src={plant.imageUrl} alt={plant.name?.fr ?? ""} fill sizes="(max-width: 600px) 100vw, 320px" style={{ objectFit: "cover" }} />
         ) : (
           <div className="adm-plant-thumb-placeholder">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <Leaf size={32} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
           </div>
         )}
       </div>
@@ -916,7 +871,7 @@ function PlantCard({
       {/* QR Code Section — always visible */}
       <div style={{ padding: "0.85rem 1.1rem", borderTop: "1px solid var(--parchment)", background: "rgba(127,168,107,0.04)" }}>
         <div style={{ fontSize: "0.62rem", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--sage)", marginBottom: "0.65rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="17" y="17" width="4" height="4" rx="0.5" fill="currentColor"/></svg>
+          <QrCode size={12} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
           {t("admin.qrCode")}
         </div>
 
@@ -935,7 +890,7 @@ function PlantCard({
                 onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--forest-light)")}
                 onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "var(--forest)")}
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><polyline points="7 10 12 15 17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><line x1="12" y1="15" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                <Download size={12} fill="currentColor" style={{ color: "#ffffff" }} aria-hidden="true" />
                 {t("admin.downloadQR")}
               </button>
               <button
@@ -948,7 +903,7 @@ function PlantCard({
                 {qrLoading ? (
                   <span style={{ width: 12, height: 12, borderRadius: "50%", border: "1.5px solid rgba(127,168,107,0.3)", borderTopColor: "var(--sage)", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
                 ) : (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M1 4v6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3.51 15a9 9 0 1 0 .49-4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  <RefreshCw size={12} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                 )}
                 {qrLoading ? t("admin.generatingQR") : t("admin.regenerateQR")}
               </button>
@@ -971,7 +926,7 @@ function PlantCard({
             {qrLoading ? (
               <span style={{ width: 13, height: 13, borderRadius: "50%", border: "1.5px solid rgba(247,243,236,0.3)", borderTopColor: "var(--cream)", display: "inline-block", animation: "spin 0.7s linear infinite" }} />
             ) : (
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/><rect x="17" y="17" width="4" height="4" rx="0.5" fill="currentColor"/></svg>
+              <QrCode size={13} fill="currentColor" style={{ color: "#ffffff" }} aria-hidden="true" />
             )}
             {qrLoading ? t("admin.generatingQR") : t("admin.generateQR")}
           </button>
@@ -986,11 +941,11 @@ function PlantCard({
 
       <div className="adm-plant-actions">
         <button className="adm-btn-edit" onClick={() => onEdit(plant)}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <Pencil size={15} fill="currentColor" style={{ color: "#5b9bd5" }} aria-hidden="true" />
           {t("common.edit")}
         </button>
         <button className="adm-btn-delete" onClick={() => onDelete(plant._id)}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <Trash2 size={15} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
           {t("common.delete")}
         </button>
       </div>

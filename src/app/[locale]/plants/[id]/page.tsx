@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/context/CartContext";
 import StoreNav from "@/components/StoreNav";
+import { Leaf, Droplets, Sun, Sprout } from "lucide-react";
 
 interface Plant {
   _id: string;
@@ -29,40 +30,6 @@ const difficultyConfig: Record<string, { color: string; bg: string }> = {
   Hard:   { color: "#991b1b", bg: "#fee2e2" },
 };
 
-const LeafSVG = ({ size = 48 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const WaterIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
-
-const SunIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="1.5"/>
-    <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
-
-const SparkleIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-    <path d="M19 3v4M21 5h-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-    <path d="M5 17v3M6.5 18.5h-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-);
 
 export default function PlantDetailPage() {
   const params = useParams();
@@ -413,7 +380,7 @@ export default function PlantDetailPage() {
                     />
                   ) : (
                     <div className="pd-img-placeholder">
-                      <LeafSVG size={56} />
+                      <Leaf size={56} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                     </div>
                   )}
                   {diffCfg && diff && (
@@ -436,7 +403,7 @@ export default function PlantDetailPage() {
               <div className="pd-info">
                 {plant.category && (
                   <span className="pd-cat">
-                    <LeafSVG size={11} />
+                    <Leaf size={11} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                     {plant.category}
                   </span>
                 )}
@@ -492,13 +459,13 @@ export default function PlantDetailPage() {
                     <div className="pd-divider" />
                     <div>
                       <p className="pd-care-header">
-                        <SparkleIcon />
+                        <Leaf size={14} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" />
                         {t("plant.care")}
                       </p>
                       <div className="pd-care-grid">
                         {plant.careInstructions.wateringFrequency && (
                           <div className="pd-care-card">
-                            <div className="pd-care-icon"><WaterIcon /></div>
+                            <div className="pd-care-icon"><Droplets size={16} fill="currentColor" style={{ color: "#5b9bd5" }} aria-hidden="true" /></div>
                             <div>
                               <div className="pd-care-label">{t("plant.wateringFrequency")}</div>
                               <div className="pd-care-value">{plant.careInstructions.wateringFrequency}</div>
@@ -507,7 +474,7 @@ export default function PlantDetailPage() {
                         )}
                         {plant.careInstructions.lightRequirements && (
                           <div className="pd-care-card">
-                            <div className="pd-care-icon"><SunIcon /></div>
+                            <div className="pd-care-icon"><Sun size={16} fill="currentColor" style={{ color: "#e8a838" }} aria-hidden="true" /></div>
                             <div>
                               <div className="pd-care-label">{t("plant.lightRequirements")}</div>
                               <div className="pd-care-value">{plant.careInstructions.lightRequirements}</div>
@@ -517,7 +484,7 @@ export default function PlantDetailPage() {
                         {plant.careInstructions.difficulty && diffCfg && (
                           <div className="pd-care-card">
                             <div className="pd-care-icon" style={{ background: `${diffCfg.bg}88`, borderColor: `${diffCfg.color}22`, color: diffCfg.color }}>
-                              <SparkleIcon />
+                              <Sprout size={16} fill="currentColor" style={{ color: diffCfg.color }} aria-hidden="true" />
                             </div>
                             <div>
                               <div className="pd-care-label">{t("plant.difficulty")}</div>
