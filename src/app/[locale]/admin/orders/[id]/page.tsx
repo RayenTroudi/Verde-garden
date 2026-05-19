@@ -43,6 +43,7 @@ interface Order {
     country: string;
     city: string;
     streetAddress: string;
+    state?: string;
     zipCode: string;
     notes?: string;
   };
@@ -140,7 +141,7 @@ export default function OrderDetailPage() {
 
   return (
     <AdminShell
-      title={order.orderNumber}
+      title={`Order #${order.orderNumber}`}
       description={`Placed on ${new Date(order.createdAt).toLocaleDateString()}`}
     >
       <Toaster />
@@ -174,8 +175,10 @@ export default function OrderDetailPage() {
               <div className="col-span-2">
                 <p className="text-xs text-slate-400 uppercase tracking-wider mb-0.5">Address</p>
                 <p className="font-medium">
-                  {order.shipping.streetAddress}, {order.shipping.zipCode},{" "}
-                  {order.shipping.city}, {order.shipping.country}
+                  {order.shipping.streetAddress},{" "}
+                  {order.shipping.city}
+                  {order.shipping.state ? `, ${order.shipping.state}` : ""},{" "}
+                  {order.shipping.zipCode}, {order.shipping.country}
                 </p>
               </div>
               {order.shipping.notes && (

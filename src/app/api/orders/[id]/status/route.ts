@@ -61,6 +61,7 @@ export async function PATCH(
 
   const historyEntry = {
     status: shippingStatus ?? paymentStatus,
+    timestamp: new Date(),
     note: note ?? "",
   };
 

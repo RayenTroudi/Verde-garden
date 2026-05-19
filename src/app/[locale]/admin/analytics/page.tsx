@@ -26,8 +26,8 @@ interface AnalyticsData {
   summary: {
     totalOrders: number;
     totalRevenue: number;
-    paidOrders: number;
     deliveredOrders: number;
+    totalCustomers: number;
   };
   monthlySales: { month: string; revenue: number; orders: number }[];
   topPlants: {
@@ -82,14 +82,14 @@ export default function AnalyticsPage() {
                 color: "#4a9967",
               },
               {
-                label: "Paid Orders",
-                value: data!.summary.paidOrders,
-                color: "#0369a1",
-              },
-              {
                 label: "Delivered",
                 value: data!.summary.deliveredOrders,
                 color: "#166534",
+              },
+              {
+                label: "Customers",
+                value: data!.summary.totalCustomers,
+                color: "#0891b2",
               },
             ].map((s) => (
               <StatsCard
