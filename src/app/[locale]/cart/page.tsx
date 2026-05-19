@@ -410,7 +410,7 @@ export default function CartPage() {
                       {(item.price * item.quantity).toFixed(2)}<span>TND</span>
                     </div>
                     <button className="cart-item-remove" onClick={() => removeItem(item.plantId)} aria-label="Remove item">
-                      <Trash2 size={15} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
+                      <Trash2 size={15} style={{ color: "#c0543a" }} aria-hidden="true" />
                     </button>
                   </div>
                 ))}

@@ -941,11 +941,11 @@ function PlantCard({
 
       <div className="adm-plant-actions">
         <button className="adm-btn-edit" onClick={() => onEdit(plant)}>
-          <Pencil size={15} fill="currentColor" style={{ color: "#5b9bd5" }} aria-hidden="true" />
+          <Pencil size={15} style={{ color: "#5b9bd5" }} aria-hidden="true" />
           {t("common.edit")}
         </button>
         <button className="adm-btn-delete" onClick={() => onDelete(plant._id)}>
-          <Trash2 size={15} fill="currentColor" style={{ color: "#c0543a" }} aria-hidden="true" />
+          <Trash2 size={15} style={{ color: "#c0543a" }} aria-hidden="true" />
           {t("common.delete")}
         </button>
       </div>
