@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { Leaf, LayoutGrid, Plus, List, Pencil, Trash2, Upload, QrCode, Download, RefreshCw } from "lucide-react";
+import { Leaf, LayoutGrid, Plus, List, Pencil, Trash2, Upload, QrCode, Download, RefreshCw, LogOut } from "lucide-react";
 
 interface Plant {
   _id: string;
@@ -330,7 +330,7 @@ export default function AdminPage() {
         }
         .adm-add-btn { display: flex; align-items: center; gap: 0.5rem; background: var(--forest); color: var(--cream); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.6rem 1.25rem; border-radius: 100px; transition: background var(--transition); white-space: nowrap; }
         .adm-add-btn:hover { background: var(--forest-light); }
-        .adm-topbar-actions { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+        .adm-topbar-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
         /* CONTENT */
         .adm-content { padding: 2rem; flex: 1; }
@@ -426,8 +426,9 @@ export default function AdminPage() {
         .adm-spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(247,243,236,0.3); border-top-color: var(--cream); animation: spin 0.7s linear infinite; flex-shrink: 0; }
         .adm-loading { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 4rem; color: var(--text-muted); font-size: 0.875rem; }
         .adm-loading-spinner { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--parchment); border-top-color: var(--sage); animation: spin 0.7s linear infinite; }
-        .adm-logout-btn { display: flex; align-items: center; gap: 0.45rem; background: rgba(196,113,75,0.08); color: var(--terra); font-size: 0.78rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid rgba(196,113,75,0.2); cursor: pointer; transition: all var(--transition); font-family: var(--font-body); white-space: nowrap; }
+        .adm-logout-btn { display: flex; align-items: center; justify-content: center; gap: 0.45rem; background: rgba(196,113,75,0.08); color: var(--terra); font-size: 0.78rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid rgba(196,113,75,0.2); cursor: pointer; transition: all var(--transition); font-family: var(--font-body); white-space: nowrap; }
         .adm-logout-btn:hover { background: rgba(196,113,75,0.16); border-color: rgba(196,113,75,0.35); }
+        .adm-logout-btn svg { flex-shrink: 0; }
 
         /* RESPONSIVE — Tablet: hide sidebar by default, show hamburger */
         @media (max-width: 960px) {
@@ -450,8 +451,9 @@ export default function AdminPage() {
           .adm-grid-2 { grid-template-columns: 1fr; }
           .adm-field.span-2 { grid-column: span 1; }
           .adm-plant-grid { grid-template-columns: 1fr; }
-          .adm-add-btn { font-size: 0; padding: 0.6rem; border-radius: 50%; width: 38px; height: 38px; justify-content: center; }
+          .adm-add-btn { font-size: 0; padding: 0; border-radius: 50%; width: 38px; height: 38px; justify-content: center; gap: 0; }
           .adm-add-btn svg { flex-shrink: 0; }
+          .adm-logout-btn { padding: 0; border-radius: 50%; width: 38px; height: 38px; gap: 0; }
           .adm-logout-btn span { display: none; }
           .adm-toast { right: 1rem; left: 1rem; max-width: none; }
           .adm-form-actions { flex-direction: column; align-items: stretch; }
@@ -476,7 +478,7 @@ export default function AdminPage() {
         <aside className={`adm-sidebar${sidebarOpen ? " open" : ""}`}>
           <div className="adm-sidebar-header">
             <Link href={`/${locale}`} className="adm-logo-link">
-              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "32px", width: "auto", display: "block" }} />
+              <img src="/icons/logo.svg" alt="Verde Garden" style={{ height: "52px", width: "auto", display: "block" }} />
             </Link>
             <span className="adm-admin-badge">{t("admin.title")}</span>
           </div>
@@ -538,7 +540,9 @@ export default function AdminPage() {
               <button
                 className="adm-logout-btn"
                 onClick={() => signOut({ callbackUrl: `/${locale}` })}
+                aria-label={t("admin.signOut")}
               >
+                <LogOut size={15} aria-hidden="true" />
                 <span>{t("admin.signOut")}</span>
               </button>
             </div>
