@@ -19,6 +19,12 @@ export interface IShippingInfo {
   notes?: string;
 }
 
+export interface IStatusHistoryEntry {
+  status: string;
+  timestamp: Date;
+  note?: string;
+}
+
 export interface IOrderDocument extends Document {
   orderNumber: string;
   items: IOrderItem[];
@@ -28,7 +34,15 @@ export interface IOrderDocument extends Document {
   total: number;
   paymentMethod: "online" | "cash_on_delivery";
   paymentStatus: "pending" | "paid" | "failed" | "cash_on_delivery";
-  shippingStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  shippingStatus:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "out_for_delivery"
+    | "delivered"
+    | "cancelled";
+  statusHistory: IStatusHistoryEntry[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -55,6 +69,14 @@ const ShippingInfoSchema = new Schema<IShippingInfo>({
   notes: { type: String, trim: true, default: "" },
 });
 
+const StatusHistorySchema = new Schema<IStatusHistoryEntry>(
+  {
+    status: { type: String, required: true },
+    note: { type: String, default: "" },
+  },
+  { timestamps: { createdAt: "timestamp", updatedAt: false } }
+);
+
 const OrderSchema = new Schema<IOrderDocument>(
   {
     orderNumber: { type: String, required: true, unique: true },
@@ -75,14 +97,22 @@ const OrderSchema = new Schema<IOrderDocument>(
     },
     shippingStatus: {
       type: String,
-      enum: ["pending", "processing", "shipped", "delivered", "cancelled"],
+      enum: [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+      ],
       default: "pending",
     },
+    statusHistory: { type: [StatusHistorySchema], default: [] },
   },
   { timestamps: true }
 );
 
-// Generate order number before saving
 OrderSchema.pre("save", async function (next) {
   if (!this.orderNumber) {
     const timestamp = Date.now().toString(36).toUpperCase();
