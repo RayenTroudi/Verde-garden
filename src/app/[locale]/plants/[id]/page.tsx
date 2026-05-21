@@ -498,16 +498,15 @@ export default function PlantDetailPage() {
                   <div className="pd-gallery-strip">
                     {allPhotos.map((url, i) => (
                       <div
-                        key={url + i}
+                        key={i}
                         className={`pd-thumb${mainPhoto === url ? " active" : ""}`}
                         onClick={() => setActivePhoto(url)}
                       >
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={url}
                           alt={`Photo ${i + 1}`}
-                          fill
-                          sizes="64px"
-                          style={{ objectFit: "cover" }}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
                         />
                       </div>
                     ))}
