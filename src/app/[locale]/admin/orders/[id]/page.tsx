@@ -66,6 +66,20 @@ const SHIPPING_STATUSES = [
 ];
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "cash_on_delivery"];
 
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Pending",
+  confirmed: "Confirmed",
+  processing: "Processing",
+  shipped: "Shipped",
+  out_for_delivery: "Out for Delivery",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  paid: "Paid",
+  failed: "Failed",
+  cash_on_delivery: "Cash on Delivery",
+  online: "Online",
+};
+
 export default function OrderDetailPage() {
   const params = useParams();
   const locale = useLocale();
@@ -370,7 +384,7 @@ export default function OrderDetailPage() {
                   <SelectContent>
                     {SHIPPING_STATUSES.map((s) => (
                       <SelectItem key={s} value={s} className="text-sm">
-                        {s.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())}
+                        {STATUS_LABELS[s] ?? s.replace(/_/g, " ")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -385,7 +399,7 @@ export default function OrderDetailPage() {
                   <SelectContent>
                     {PAYMENT_STATUSES.map((s) => (
                       <SelectItem key={s} value={s} className="text-sm">
-                        {s.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase())}
+                        {STATUS_LABELS[s] ?? s.replace(/_/g, " ")}
                       </SelectItem>
                     ))}
                   </SelectContent>

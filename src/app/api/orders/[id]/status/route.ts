@@ -59,6 +59,14 @@ export async function PATCH(
   if (shippingStatus) update.shippingStatus = shippingStatus;
   if (paymentStatus) update.paymentStatus = paymentStatus;
 
+  // Auto-mark cash-on-delivery orders as paid when delivered
+  if (shippingStatus === "delivered") {
+    const existing = await Order.findById(id).select("paymentMethod paymentStatus").lean();
+    if (existing && existing.paymentMethod === "cash_on_delivery" && existing.paymentStatus !== "paid") {
+      update.paymentStatus = "paid";
+    }
+  }
+
   const historyEntry = {
     status: shippingStatus ?? paymentStatus,
     timestamp: new Date(),
