@@ -168,6 +168,7 @@ export default function StoreNav({
         @media (max-width: 768px) {
           .sn-count { display: none; }
           .sn-admin { display: none; }
+          .sn-back { display: none; }
           .sn-inner { padding: 0 1.25rem; }
           ${showMobileMenu ? `.sn-hamburger { display: flex; }
           .sn-right > .lang-switcher { display: none; }` : ""}

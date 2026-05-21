@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -47,7 +47,6 @@ export default function PlantDetailPage() {
   const [added, setAdded] = useState(false);
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const imgColRef = useRef<HTMLDivElement>(null);
 
   const handleAddToCart = useCallback(() => {
     if (!plant || plant.stock <= 0) return;
@@ -124,9 +123,7 @@ export default function PlantDetailPage() {
   const diffCfg = diff ? difficultyConfig[diff] : null;
   const stock = stockInfo();
 
-  return (
-    <>
-      <style>{`
+  const css = `
         /* ─── PAGE ─────────────────────────────────────── */
         .pd-page {
           min-height: 100vh;
@@ -437,7 +434,11 @@ export default function PlantDetailPage() {
           .pd-info { gap: 1.15rem; }
           .pd-care-grid { grid-template-columns: 1fr 1fr; }
         }
-      `}</style>
+  `;
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: css }} />
 
       <StoreNav showCart showBack />
 
@@ -463,7 +464,7 @@ export default function PlantDetailPage() {
           {plant && (
             <div className="pd-grid">
               {/* Image column */}
-              <div className="pd-img-col" ref={imgColRef}>
+              <div className="pd-img-col">
                 <div
                   className="pd-img-wrap"
                   onClick={() => { if (allPhotos.length) setLightboxOpen(true); }}
@@ -502,10 +503,7 @@ export default function PlantDetailPage() {
                       <div
                         key={i}
                         className={`pd-thumb${mainPhoto === url ? " active" : ""}`}
-                        onClick={() => {
-                          setActivePhoto(url);
-                          imgColRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }}
+                        onClick={() => setActivePhoto(url)}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
