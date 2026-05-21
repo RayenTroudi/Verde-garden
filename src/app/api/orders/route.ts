@@ -106,12 +106,14 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const total = await Order.countDocuments(filter);
-    const orders = await Order.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
+    const [total, orders] = await Promise.all([
+      Order.countDocuments(filter),
+      Order.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
 
     return NextResponse.json({ orders, total, page, limit });
   } catch (err) {

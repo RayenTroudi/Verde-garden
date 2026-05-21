@@ -43,6 +43,7 @@ export interface IOrderDocument extends Document {
     | "delivered"
     | "cancelled";
   statusHistory: IStatusHistoryEntry[];
+  adminNotes: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -109,9 +110,17 @@ const OrderSchema = new Schema<IOrderDocument>(
       default: "pending",
     },
     statusHistory: { type: [StatusHistorySchema], default: [] },
+    adminNotes: { type: String, default: "" },
   },
   { timestamps: true }
 );
+
+// Indexes for dashboard analytics and orders list queries
+OrderSchema.index({ shippingStatus: 1 });
+OrderSchema.index({ paymentStatus: 1 });
+OrderSchema.index({ paymentMethod: 1 });
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ "shipping.email": 1 });
 
 OrderSchema.pre("save", async function (next) {
   if (!this.orderNumber) {

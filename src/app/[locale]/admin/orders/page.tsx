@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 interface Order {
   _id: string;
@@ -37,6 +39,7 @@ const PAYMENT_METHODS = ["online", "cash_on_delivery"];
 
 export default function AdminOrdersPage() {
   const locale = useLocale();
+  const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -45,6 +48,7 @@ export default function AdminOrdersPage() {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [methodFilter, setMethodFilter] = useState("all");
   const [page, setPage] = useState(1);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const LIMIT = 20;
 
   const fetchOrders = useCallback(async () => {
@@ -71,6 +75,31 @@ export default function AdminOrdersPage() {
     return () => clearTimeout(t);
   }, [fetchOrders, search]);
 
+  const handleInlineStatusUpdate = async (orderId: string, shippingStatus: string) => {
+    setUpdatingId(orderId);
+    try {
+      const res = await fetch(`/api/orders/${orderId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shippingStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? { ...o, shippingStatus } : o))
+      );
+      toast({ title: "Status updated", description: `Delivery set to "${shippingStatus.replace(/_/g, " ")}"` });
+    } catch (err) {
+      toast({
+        title: "Update failed",
+        description: err instanceof Error ? err.message : "Unknown error",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
   const totalPages = Math.ceil(total / LIMIT);
 
   const filtered = orders.filter((o) => {
@@ -86,6 +115,7 @@ export default function AdminOrdersPage() {
 
   return (
     <AdminShell title="Orders" description={`${total} orders total`}>
+      <Toaster />
       <div className="flex flex-wrap gap-2 mb-4">
         <div className="relative flex-1 min-w-[200px]">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -186,7 +216,29 @@ export default function AdminOrdersPage() {
                     <OrderStatusBadge status={order.paymentStatus} type="payment" />
                   </TableCell>
                   <TableCell>
-                    <OrderStatusBadge status={order.shippingStatus} type="shipping" />
+                    <div className="flex items-center gap-1.5">
+                      {updatingId === order._id ? (
+                        <Loader2 size={14} className="animate-spin text-slate-400" />
+                      ) : null}
+                      <Select
+                        value={order.shippingStatus}
+                        onValueChange={(v) => { if (v) handleInlineStatusUpdate(order._id, v); }}
+                        disabled={updatingId === order._id}
+                      >
+                        <SelectTrigger className="h-7 w-[140px] text-xs border-0 p-0 shadow-none focus:ring-0 bg-transparent">
+                          <SelectValue>
+                            <OrderStatusBadge status={order.shippingStatus} type="shipping" />
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SHIPPING_STATUSES.map((s) => (
+                            <SelectItem key={s} value={s} className="text-xs">
+                              <OrderStatusBadge status={s} type="shipping" />
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </TableCell>
                   <TableCell className="text-right font-semibold text-sm text-[#2d4a2d]">
                     {order.total.toFixed(2)} TND

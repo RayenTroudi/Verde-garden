@@ -13,7 +13,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { ArrowLeft, Clock, MapPin, Package, CreditCard } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, Package, CreditCard, TruckIcon, Download } from "lucide-react";
+import { OrderProgressTracker } from "@/components/admin/OrderProgressTracker";
+import { downloadOrderPDF } from "@/lib/order-pdf";
 import Link from "next/link";
 import Image from "next/image";
 import { useLocale } from "next-intl";
@@ -54,6 +56,7 @@ interface Order {
   paymentStatus: string;
   shippingStatus: string;
   statusHistory: StatusHistoryEntry[];
+  adminNotes: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -72,6 +75,8 @@ export default function OrderDetailPage() {
   const [newShipping, setNewShipping] = useState("");
   const [newPayment, setNewPayment] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [adminNotes, setAdminNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
 
   useEffect(() => {
     fetch(`/api/orders/${params.id}`)
@@ -81,6 +86,7 @@ export default function OrderDetailPage() {
         setOrder(o);
         setNewShipping(o?.shippingStatus ?? "");
         setNewPayment(o?.paymentStatus ?? "");
+        setAdminNotes(o?.adminNotes ?? "");
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -111,6 +117,30 @@ export default function OrderDetailPage() {
       });
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleSaveNotes = async () => {
+    if (!order) return;
+    setSavingNotes(true);
+    try {
+      const res = await fetch(`/api/orders/${order._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adminNotes }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setOrder(data.order);
+      toast({ title: "Notes saved" });
+    } catch (err) {
+      toast({
+        title: "Failed to save notes",
+        description: err instanceof Error ? err.message : "Unknown error",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingNotes(false);
     }
   };
 
@@ -146,13 +176,35 @@ export default function OrderDetailPage() {
     >
       <Toaster />
 
-      <Link href={`/${locale}/admin/orders`} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#4a6741] mb-4 transition-colors">
-        <ArrowLeft size={15} />
-        Back to Orders
-      </Link>
+      <div className="flex items-center justify-between mb-4">
+        <Link href={`/${locale}/admin/orders`} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#4a6741] transition-colors">
+          <ArrowLeft size={15} />
+          Back to Orders
+        </Link>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs gap-1.5"
+          onClick={() => downloadOrderPDF(order)}
+        >
+          <Download size={13} />
+          Download PDF
+        </Button>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
+                <TruckIcon size={15} /> Delivery Progress
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2 pb-4 px-6">
+              <OrderProgressTracker currentStatus={order.shippingStatus} />
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
@@ -348,6 +400,30 @@ export default function OrderDetailPage() {
                 onClick={handleUpdateStatus}
               >
                 {updating ? "Saving…" : "Save Changes"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold text-slate-600">
+                Internal Notes
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <textarea
+                value={adminNotes}
+                onChange={(e) => setAdminNotes(e.target.value)}
+                placeholder="Add internal notes about this order…"
+                rows={4}
+                className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none resize-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 transition-colors"
+              />
+              <Button
+                className="w-full bg-[#4a6741] hover:bg-[#3a5631] text-white h-9 text-sm"
+                disabled={savingNotes || adminNotes === (order.adminNotes ?? "")}
+                onClick={handleSaveNotes}
+              >
+                {savingNotes ? "Saving…" : "Save Notes"}
               </Button>
             </CardContent>
           </Card>
