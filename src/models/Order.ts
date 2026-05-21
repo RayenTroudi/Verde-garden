@@ -122,14 +122,6 @@ OrderSchema.index({ paymentMethod: 1 });
 OrderSchema.index({ createdAt: -1 });
 OrderSchema.index({ "shipping.email": 1 });
 
-OrderSchema.pre("save", async function (next) {
-  if (!this.orderNumber) {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    this.orderNumber = `VG-${timestamp}-${random}`;
-  }
-  next();
-});
 
 export default mongoose.models.Order ??
   mongoose.model<IOrderDocument>("Order", OrderSchema);

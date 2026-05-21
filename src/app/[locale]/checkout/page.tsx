@@ -42,6 +42,7 @@ function CheckoutContent() {
   const [paymentMethod, setPaymentMethod] = useState<"cash_on_delivery" | "online">("cash_on_delivery");
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState<"shipping" | "payment">("shipping");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     if (isBuyNow) {
@@ -111,7 +112,11 @@ function CheckoutContent() {
       if (!isBuyNow) clearCart();
       else sessionStorage.removeItem("vg_buynow");
 
-      router.push(`/${locale}/order-confirmation/${data.order.orderNumber}`);
+      if (paymentMethod === "cash_on_delivery") {
+        setShowSuccessModal(true);
+      } else {
+        router.push(`/${locale}/order-confirmation/${data.order.orderNumber}`);
+      }
     } catch (err) {
       alert(err instanceof Error ? err.message : t("checkout.orderError"));
     } finally {
@@ -420,7 +425,142 @@ function CheckoutContent() {
           animation: spin 0.7s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── SUCCESS MODAL ─────────────────────────────────────────── */
+        .co-modal-overlay {
+          position: fixed; inset: 0; z-index: 1000;
+          background: rgba(10, 25, 12, 0.55);
+          backdrop-filter: blur(6px);
+          display: flex; align-items: center; justify-content: center;
+          padding: 1.5rem;
+          animation: coFadeIn 0.25s ease;
+        }
+        @keyframes coFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .co-modal {
+          background: var(--white);
+          border-radius: 20px;
+          box-shadow: 0 24px 64px rgba(10, 25, 12, 0.22), 0 4px 16px rgba(10, 25, 12, 0.12);
+          max-width: 420px; width: 100%;
+          overflow: hidden;
+          animation: coSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes coSlideUp {
+          from { opacity: 0; transform: translateY(28px) scale(0.96); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .co-modal-top {
+          background: linear-gradient(135deg, var(--forest) 0%, #2d6a4f 100%);
+          padding: 2.5rem 2rem 2rem;
+          display: flex; flex-direction: column; align-items: center;
+          position: relative; overflow: hidden;
+        }
+        .co-modal-top::before {
+          content: '';
+          position: absolute; top: -40px; right: -40px;
+          width: 160px; height: 160px;
+          background: rgba(255,255,255,0.06); border-radius: 50%;
+        }
+        .co-modal-top::after {
+          content: '';
+          position: absolute; bottom: -50px; left: -20px;
+          width: 120px; height: 120px;
+          background: rgba(255,255,255,0.05); border-radius: 50%;
+        }
+        .co-modal-icon {
+          width: 72px; height: 72px; border-radius: 50%;
+          background: rgba(255,255,255,0.15);
+          border: 2px solid rgba(255,255,255,0.25);
+          display: flex; align-items: center; justify-content: center;
+          margin-bottom: 1.25rem; position: relative; z-index: 1;
+        }
+        .co-modal-checkmark {
+          width: 36px; height: 36px; stroke: white; stroke-width: 2.5;
+          stroke-linecap: round; stroke-linejoin: round; fill: none;
+          stroke-dasharray: 60; stroke-dashoffset: 60;
+          animation: coDraw 0.45s 0.2s ease forwards;
+        }
+        @keyframes coDraw { to { stroke-dashoffset: 0; } }
+        .co-modal-title {
+          font-family: var(--font-display);
+          font-size: 1.5rem; font-weight: 500; color: white;
+          text-align: center; position: relative; z-index: 1;
+          letter-spacing: -0.01em;
+        }
+        .co-modal-body {
+          padding: 1.75rem 2rem 2rem;
+          display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .co-modal-message {
+          font-size: 0.9rem; color: var(--text-muted);
+          text-align: center; line-height: 1.65;
+        }
+        .co-modal-divider {
+          height: 1px; background: var(--parchment);
+        }
+        .co-modal-badge {
+          display: flex; align-items: center; gap: 0.75rem;
+          background: rgba(127,168,107,0.08);
+          border: 1px solid rgba(127,168,107,0.2);
+          border-radius: 12px; padding: 0.75rem 1rem;
+        }
+        .co-modal-badge-icon {
+          width: 36px; height: 36px; flex-shrink: 0;
+          background: rgba(28,58,30,0.08);
+          border-radius: 9px;
+          display: grid; place-items: center; color: var(--forest);
+        }
+        .co-modal-badge-text {
+          font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;
+        }
+        .co-modal-badge-text strong {
+          display: block; font-size: 0.85rem;
+          color: var(--forest); font-weight: 600; margin-bottom: 0.1rem;
+        }
+        .co-modal-confirm {
+          width: 100%; background: var(--forest); color: var(--cream);
+          border: none; border-radius: 11px;
+          padding: 0.9rem 1.5rem;
+          font-size: 0.9rem; font-weight: 600;
+          cursor: pointer; transition: background 0.2s, transform 0.15s;
+          display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .co-modal-confirm:hover { background: #2d6a4f; transform: translateY(-1px); }
       `}</style>
+
+      {showSuccessModal && (
+        <div className="co-modal-overlay">
+          <div className="co-modal" role="dialog" aria-modal="true" aria-labelledby="co-modal-title">
+            <div className="co-modal-top">
+              <div className="co-modal-icon">
+                <svg className="co-modal-checkmark" viewBox="0 0 40 40" aria-hidden="true">
+                  <polyline points="8,20 17,30 32,12" />
+                </svg>
+              </div>
+              <h2 className="co-modal-title" id="co-modal-title">{t("checkout.orderSuccessTitle")}</h2>
+            </div>
+            <div className="co-modal-body">
+              <p className="co-modal-message">{t("checkout.orderSuccessMessage")}</p>
+              <div className="co-modal-divider" />
+              <div className="co-modal-badge">
+                <div className="co-modal-badge-icon">
+                  <Banknote size={18} aria-hidden="true" />
+                </div>
+                <div className="co-modal-badge-text">
+                  <strong>{t("checkout.cashOnDelivery")}</strong>
+                  {t("checkout.cashOnDeliveryDesc")}
+                </div>
+              </div>
+              <button
+                className="co-modal-confirm"
+                onClick={() => { setShowSuccessModal(false); router.push(`/${locale}`); }}
+              >
+                {t("checkout.orderSuccessConfirm")}
+                <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <StoreNav showCart />
 
@@ -451,7 +591,7 @@ function CheckoutContent() {
                 <div className="co-card">
                   <div className="co-card-header">
                     <div className="co-card-header-icon">
-                      <MapPin size={16} fill="currentColor" style={{ color: "#e07a4f" }} aria-hidden="true" />
+                      <MapPin size={16} style={{ color: "#e07a4f" }} aria-hidden="true" />
                     </div>
                     <h2 className="co-card-title">{t("checkout.shippingInfo")}</h2>
                   </div>

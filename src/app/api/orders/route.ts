@@ -51,7 +51,12 @@ export async function POST(req: NextRequest) {
     const paymentStatus =
       paymentMethod === "cash_on_delivery" ? "cash_on_delivery" : "pending";
 
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const orderNumber = `VG-${timestamp}-${random}`;
+
     const order = new Order({
+      orderNumber,
       items: validatedItems,
       shipping,
       subtotal,
@@ -71,8 +76,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ order }, { status: 201 });
   } catch (err) {
-    console.error("Order creation error:", err);
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("Order creation error:", message, err);
+    return NextResponse.json({ error: message || "Failed to create order" }, { status: 500 });
   }
 }
 

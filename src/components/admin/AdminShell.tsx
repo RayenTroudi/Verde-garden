@@ -16,7 +16,7 @@ export function AdminShell({ children, title, description }: AdminShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 overflow-x-hidden">
       <aside className="hidden lg:flex w-64 flex-col fixed inset-y-0 z-50 border-r border-white/[0.04]">
         <AdminSidebar />
       </aside>
@@ -27,7 +27,7 @@ export function AdminShell({ children, title, description }: AdminShellProps) {
         </SheetContent>
       </Sheet>
 
-      <div className="flex-1 flex flex-col lg:ml-64">
+      <div className="flex-1 flex flex-col lg:ml-64 min-w-0 overflow-x-hidden">
         <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
           <div className="flex items-center gap-3 px-4 lg:px-6 h-16">
             <Button
@@ -51,7 +51,7 @@ export function AdminShell({ children, title, description }: AdminShellProps) {
           </div>
         </header>
 
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 p-4 lg:p-6 min-w-0 overflow-x-hidden">{children}</main>
       </div>
     </div>
   );
