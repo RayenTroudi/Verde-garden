@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -47,6 +47,7 @@ export default function PlantDetailPage() {
   const [added, setAdded] = useState(false);
   const [activePhoto, setActivePhoto] = useState<string | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const imgColRef = useRef<HTMLDivElement>(null);
 
   const handleAddToCart = useCallback(() => {
     if (!plant || plant.stock <= 0) return;
@@ -134,20 +135,21 @@ export default function PlantDetailPage() {
         }
 
         .pd-container {
-          max-width: 1100px; margin: 0 auto;
+          max-width: 1200px; margin: 0 auto;
           padding: 3rem 2rem 5rem;
         }
         .pd-grid {
           display: grid;
-          grid-template-columns: 5fr 6fr;
-          gap: 4rem;
+          grid-template-columns: 55fr 45fr;
+          gap: 3.5rem;
           align-items: start;
         }
 
         /* ─── IMAGE ────────────────────────────────────── */
-        .pd-img-col { position: sticky; top: 100px; }
+        .pd-img-col { position: sticky; top: 100px; width: 100%; }
         .pd-img-wrap {
           position: relative;
+          width: 100%;
           aspect-ratio: 3/4;
           border-radius: 20px;
           overflow: hidden;
@@ -423,13 +425,13 @@ export default function PlantDetailPage() {
         /* ─── RESPONSIVE ───────────────────────────────── */
         @media (max-width: 900px) {
           .pd-grid { grid-template-columns: 1fr; gap: 2rem; }
-          .pd-img-col { position: static; }
-          .pd-img-wrap { aspect-ratio: 4/3; max-height: 440px; }
+          .pd-img-col { position: static; width: 100%; }
+          .pd-img-wrap { aspect-ratio: 3/4; width: 100%; max-height: none; }
           .pd-container { padding: 2rem 1.5rem; }
         }
         @media (max-width: 600px) {
-          .pd-container { padding: 1.5rem 1.25rem 3rem; }
-          .pd-img-wrap { aspect-ratio: 16/10; max-height: 300px; }
+          .pd-container { padding: 1.5rem 1rem 3rem; }
+          .pd-img-wrap { aspect-ratio: 3/4; width: 100%; max-height: none; height: auto; }
           .pd-name { font-size: clamp(1.8rem, 6vw, 2.25rem); }
           .pd-price { font-size: 1.85rem; }
           .pd-info { gap: 1.15rem; }
@@ -461,7 +463,7 @@ export default function PlantDetailPage() {
           {plant && (
             <div className="pd-grid">
               {/* Image column */}
-              <div className="pd-img-col">
+              <div className="pd-img-col" ref={imgColRef}>
                 <div
                   className="pd-img-wrap"
                   onClick={() => { if (allPhotos.length) setLightboxOpen(true); }}
@@ -500,7 +502,10 @@ export default function PlantDetailPage() {
                       <div
                         key={i}
                         className={`pd-thumb${mainPhoto === url ? " active" : ""}`}
-                        onClick={() => setActivePhoto(url)}
+                        onClick={() => {
+                          setActivePhoto(url);
+                          imgColRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
