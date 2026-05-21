@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       description: { fr: body.description?.fr ?? "", en: body.description?.en ?? "" },
       price: Number(body.price),
       imageUrl: body.imageUrl ?? "",
+      gallery: Array.isArray(body.gallery) ? body.gallery : [],
       category: body.category ?? "General",
       careInstructions: {
         wateringFrequency: body.careInstructions?.wateringFrequency ?? "",

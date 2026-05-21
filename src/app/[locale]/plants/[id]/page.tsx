@@ -15,6 +15,7 @@ interface Plant {
   description: { fr: string; en: string };
   price: number;
   imageUrl: string;
+  gallery?: string[];
   category: string;
   stock: number;
   careInstructions: {
@@ -44,6 +45,8 @@ export default function PlantDetailPage() {
   const [error, setError] = useState(false);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [activePhoto, setActivePhoto] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   const handleAddToCart = useCallback(() => {
     if (!plant || plant.stock <= 0) return;
@@ -81,6 +84,33 @@ export default function PlantDetailPage() {
       .then((data) => { setPlant(data); setLoading(false); })
       .catch(() => { setError(true); setLoading(false); });
   }, [id]);
+
+  const allPhotos = plant
+    ? [plant.imageUrl, ...(plant.gallery ?? [])].filter(Boolean)
+    : [];
+  const mainPhoto = activePhoto ?? plant?.imageUrl ?? null;
+  const lightboxIndex = allPhotos.indexOf(mainPhoto ?? "");
+
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setLightboxOpen(false); return; }
+      if (e.key === "ArrowRight") {
+        setActivePhoto((cur) => {
+          const idx = allPhotos.indexOf(cur ?? plant?.imageUrl ?? "");
+          return allPhotos[(idx + 1) % allPhotos.length] ?? null;
+        });
+      }
+      if (e.key === "ArrowLeft") {
+        setActivePhoto((cur) => {
+          const idx = allPhotos.indexOf(cur ?? plant?.imageUrl ?? "");
+          return allPhotos[(idx - 1 + allPhotos.length) % allPhotos.length] ?? null;
+        });
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxOpen, allPhotos, plant]);
 
   const stockInfo = () => {
     if (!plant) return { text: "", variant: "ok" };
@@ -327,6 +357,69 @@ export default function PlantDetailPage() {
           color: var(--text-muted); font-size: 0.9rem;
         }
 
+        /* ─── GALLERY STRIP ─────────────────────────────── */
+        .pd-gallery-strip {
+          display: flex; gap: 0.55rem; margin-top: 0.75rem;
+          overflow-x: auto; padding-bottom: 4px;
+        }
+        .pd-gallery-strip::-webkit-scrollbar { height: 4px; }
+        .pd-gallery-strip::-webkit-scrollbar-track { background: transparent; }
+        .pd-gallery-strip::-webkit-scrollbar-thumb { background: var(--sand); border-radius: 4px; }
+        .pd-thumb {
+          flex-shrink: 0; width: 64px; height: 64px;
+          border-radius: 10px; overflow: hidden;
+          border: 2px solid transparent;
+          cursor: pointer; transition: border-color 0.18s, opacity 0.18s;
+          position: relative; background: var(--parchment);
+        }
+        .pd-thumb:hover { opacity: 0.85; }
+        .pd-thumb.active { border-color: var(--forest); }
+
+        /* ─── LIGHTBOX ───────────────────────────────────── */
+        .pd-lightbox {
+          position: fixed; inset: 0; z-index: 300;
+          background: rgba(5,12,6,0.92);
+          display: grid; place-items: center;
+          backdrop-filter: blur(6px);
+        }
+        .pd-lightbox-inner {
+          position: relative; max-width: min(90vw, 900px);
+          max-height: 90vh; width: 100%;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .pd-lightbox-img {
+          max-width: 100%; max-height: 88vh;
+          border-radius: 12px;
+          object-fit: contain;
+          box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+        }
+        .pd-lightbox-close {
+          position: fixed; top: 1.25rem; right: 1.5rem;
+          width: 40px; height: 40px; border-radius: 50%;
+          background: rgba(255,255,255,0.12); border: none;
+          color: #fff; font-size: 1.4rem; line-height: 1;
+          cursor: pointer; display: grid; place-items: center;
+          transition: background 0.18s;
+        }
+        .pd-lightbox-close:hover { background: rgba(255,255,255,0.22); }
+        .pd-lightbox-arrow {
+          position: fixed; top: 50%; transform: translateY(-50%);
+          width: 44px; height: 44px; border-radius: 50%;
+          background: rgba(255,255,255,0.12); border: none;
+          color: #fff; font-size: 1.4rem; cursor: pointer;
+          display: grid; place-items: center; transition: background 0.18s;
+        }
+        .pd-lightbox-arrow:hover { background: rgba(255,255,255,0.24); }
+        .pd-lightbox-arrow.prev { left: 1rem; }
+        .pd-lightbox-arrow.next { right: 1rem; }
+        .pd-lightbox-counter {
+          position: fixed; bottom: 1.5rem; left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.78rem; color: rgba(255,255,255,0.6);
+          font-weight: 500; letter-spacing: 0.06em;
+        }
+        .pd-img-wrap { cursor: zoom-in; }
+
         /* ─── RESPONSIVE ───────────────────────────────── */
         @media (max-width: 900px) {
           .pd-grid { grid-template-columns: 1fr; gap: 2rem; }
@@ -369,10 +462,13 @@ export default function PlantDetailPage() {
             <div className="pd-grid">
               {/* Image column */}
               <div className="pd-img-col">
-                <div className="pd-img-wrap">
-                  {plant.imageUrl ? (
+                <div
+                  className="pd-img-wrap"
+                  onClick={() => { if (allPhotos.length) setLightboxOpen(true); }}
+                >
+                  {mainPhoto ? (
                     <Image
-                      src={plant.imageUrl}
+                      src={mainPhoto}
                       alt={plant.name?.[locale as "fr" | "en"] ?? ""}
                       fill
                       sizes="(max-width: 768px) 100vw, 50vw"
@@ -397,6 +493,26 @@ export default function PlantDetailPage() {
                     </div>
                   )}
                 </div>
+
+                {allPhotos.length > 1 && (
+                  <div className="pd-gallery-strip">
+                    {allPhotos.map((url, i) => (
+                      <div
+                        key={url + i}
+                        className={`pd-thumb${mainPhoto === url ? " active" : ""}`}
+                        onClick={() => setActivePhoto(url)}
+                      >
+                        <Image
+                          src={url}
+                          alt={`Photo ${i + 1}`}
+                          fill
+                          sizes="64px"
+                          style={{ objectFit: "cover" }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Info column */}
@@ -503,6 +619,53 @@ export default function PlantDetailPage() {
           )}
         </div>
       </main>
+
+      {lightboxOpen && allPhotos.length > 0 && (
+        <div className="pd-lightbox" onClick={() => setLightboxOpen(false)}>
+          <div className="pd-lightbox-inner" onClick={(e) => e.stopPropagation()}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={mainPhoto ?? ""}
+              alt="Gallery"
+              className="pd-lightbox-img"
+            />
+          </div>
+          <button
+            className="pd-lightbox-close"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Close"
+          >
+            ×
+          </button>
+          {allPhotos.length > 1 && (
+            <>
+              <button
+                className="pd-lightbox-arrow prev"
+                aria-label="Previous photo"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActivePhoto(allPhotos[(lightboxIndex - 1 + allPhotos.length) % allPhotos.length]);
+                }}
+              >
+                ‹
+              </button>
+              <button
+                className="pd-lightbox-arrow next"
+                aria-label="Next photo"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActivePhoto(allPhotos[(lightboxIndex + 1) % allPhotos.length]);
+                }}
+              >
+                ›
+              </button>
+              <div className="pd-lightbox-counter">
+                {lightboxIndex + 1} / {allPhotos.length}
+              </div>
+            </>
+          )}
+        </div>
+      )}
     </>
   );
 }

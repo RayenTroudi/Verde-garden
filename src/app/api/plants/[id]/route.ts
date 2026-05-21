@@ -36,13 +36,13 @@ export async function PUT(
     const { id } = await params;
     await connectToDatabase();
     const body = await request.json();
-    const { price, imageUrl, category, stock, careInstructions } = body;
+    const { price, imageUrl, gallery, category, stock, careInstructions } = body;
     const name = { fr: body.name?.fr ?? "", en: body.name?.en ?? "" };
     const description = { fr: body.description?.fr ?? "", en: body.description?.en ?? "" };
 
     const plant = await Plant.findByIdAndUpdate(
       id,
-      { $set: { name, description, price, imageUrl, category, stock, careInstructions } },
+      { $set: { name, description, price, imageUrl, gallery: gallery ?? [], category, stock, careInstructions } },
       { new: true, runValidators: true }
     );
 

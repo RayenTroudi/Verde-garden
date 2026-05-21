@@ -12,6 +12,7 @@ interface Plant {
   description: { fr: string; en: string };
   price: number;
   imageUrl: string;
+  gallery?: string[];
   category: string;
   stock: number;
   careInstructions: {
@@ -39,6 +40,7 @@ interface FormState {
   wateringFrequency: string;
   lightRequirements: string;
   difficulty: "Easy" | "Medium" | "Hard";
+  gallery: string[];
 }
 
 type Tab = "overview" | "add" | "manage";
@@ -55,6 +57,7 @@ const BLANK_FORM: FormState = {
   wateringFrequency: "",
   lightRequirements: "",
   difficulty: "Easy",
+  gallery: [],
 };
 
 const CATEGORIES = [
@@ -81,6 +84,8 @@ export default function AdminPlantsPage() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageUploading, setImageUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -139,12 +144,37 @@ export default function AdminPlantsPage() {
     }
   };
 
+  const handleGalleryAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setGalleryUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? t("errors.uploadFailed"));
+      setForm((f) => ({ ...f, gallery: [...f.gallery, data.url as string] }));
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : t("errors.uploadFailed");
+      showToast("error", msg);
+    } finally {
+      setGalleryUploading(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = "";
+    }
+  };
+
+  const handleGalleryRemove = (url: string) => {
+    setForm((f) => ({ ...f, gallery: f.gallery.filter((u) => u !== url) }));
+  };
+
   const resetForm = () => {
     setForm(BLANK_FORM);
     setEditingId(null);
     setImageFile(null);
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (galleryInputRef.current) galleryInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -161,6 +191,7 @@ export default function AdminPlantsPage() {
         description: { fr: form.descFr.trim(), en: form.descEn.trim() },
         price: parseFloat(form.price),
         imageUrl: imageUrl ?? "",
+        gallery: form.gallery,
         category: form.category.trim() || "General",
         stock: parseInt(form.stock) || 0,
         careInstructions: {
@@ -206,6 +237,7 @@ export default function AdminPlantsPage() {
       wateringFrequency: plant.careInstructions?.wateringFrequency ?? "",
       lightRequirements: plant.careInstructions?.lightRequirements ?? "",
       difficulty: plant.careInstructions?.difficulty ?? "Easy",
+      gallery: plant.gallery ?? [],
     });
     setEditingId(plant._id);
     setImagePreview(plant.imageUrl || null);
@@ -353,6 +385,16 @@ export default function AdminPlantsPage() {
         .adm-spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(247,243,236,0.3); border-top-color: var(--cream); animation: spin 0.7s linear infinite; flex-shrink: 0; }
         .adm-loading { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 4rem; color: var(--text-muted); font-size: 0.875rem; }
         .adm-loading-spinner { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--parchment); border-top-color: var(--sage); animation: spin 0.7s linear infinite; }
+
+        /* GALLERY SECTION */
+        .adm-gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.65rem; margin-bottom: 0.85rem; }
+        .adm-gallery-thumb { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--parchment); background: var(--cream); }
+        .adm-gallery-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .adm-gallery-remove { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; background: rgba(10,18,11,0.65); border: none; color: #fff; font-size: 0.75rem; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+        .adm-gallery-remove:hover { background: var(--terra); }
+        .adm-gallery-add { display: flex; align-items: center; gap: 0.45rem; font-size: 0.8rem; font-weight: 500; color: var(--sage); background: var(--parchment); border: 1.5px dashed var(--sand); border-radius: var(--radius-sm); padding: 0.55rem 1rem; cursor: pointer; transition: all var(--transition); width: fit-content; }
+        .adm-gallery-add:hover:not(.uploading) { border-color: var(--fern); background: rgba(127,168,107,0.06); }
+        .adm-gallery-input { display: none; }
 
         /* RESPONSIVE */
         @media (max-width: 640px) {
@@ -557,6 +599,52 @@ export default function AdminPlantsPage() {
                         <div className="adm-upload-icon"><Upload size={22} fill="currentColor" style={{ color: "#7fa86b" }} aria-hidden="true" /></div>
                         <p className="adm-upload-text">{t("admin.dragDrop")}</p>
                         <p className="adm-upload-hint">{t("admin.imageFormats")}</p>
+                      </>
+                    )}
+                  </label>
+                </div>
+
+                <div className="adm-form-section">
+                  <div className="adm-section-label">Gallery</div>
+                  <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginBottom: "0.85rem" }}>
+                    Additional photos shown in the plant detail page gallery.
+                  </p>
+                  {form.gallery.length > 0 && (
+                    <div className="adm-gallery-grid">
+                      {form.gallery.map((url) => (
+                        <div key={url} className="adm-gallery-thumb">
+                          <img src={url} alt="Gallery photo" />
+                          <button
+                            type="button"
+                            className="adm-gallery-remove"
+                            onClick={() => handleGalleryRemove(url)}
+                            aria-label="Remove photo"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <input
+                    ref={galleryInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="adm-gallery-input"
+                    id="gallery-upload"
+                    onChange={handleGalleryAdd}
+                    disabled={galleryUploading}
+                  />
+                  <label htmlFor="gallery-upload" className={`adm-gallery-add${galleryUploading ? " uploading" : ""}`}>
+                    {galleryUploading ? (
+                      <>
+                        <span className="adm-spinner" />
+                        Uploading…
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={15} aria-hidden="true" />
+                        Add Photo
                       </>
                     )}
                   </label>

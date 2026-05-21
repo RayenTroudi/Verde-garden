@@ -5,6 +5,7 @@ export interface IPlantDocument extends Document {
   description: { fr: string; en: string };
   price: number;
   imageUrl: string;
+  gallery: string[];
   category: string;
   careInstructions: {
     wateringFrequency: string;
@@ -31,6 +32,7 @@ const PlantSchema = new Schema<IPlantDocument>({
   },
   price: { type: Number, required: true, min: 0 },
   imageUrl: { type: String, default: "" },
+  gallery: { type: [String], default: [] },
   category: { type: String, default: "General", trim: true },
   careInstructions: {
     wateringFrequency: { type: String, default: "" },
