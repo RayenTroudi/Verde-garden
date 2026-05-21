@@ -52,5 +52,6 @@ const PlantSchema = new Schema<IPlantDocument>({
   },
 });
 
-export default mongoose.models.Plant ??
-  mongoose.model<IPlantDocument>("Plant", PlantSchema);
+export default mongoose.models.Plant
+  ? (mongoose.models.Plant as mongoose.Model<IPlantDocument>)
+  : mongoose.model<IPlantDocument>("Plant", PlantSchema);
